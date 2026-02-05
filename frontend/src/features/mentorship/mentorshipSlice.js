@@ -1,0 +1,116 @@
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import API from '../../services/api';
+
+export const fetchRequests = createAsyncThunk('mentorship/fetchRequests', async (_, { rejectWithValue }) => {
+  try {
+    const response = await API.get('/mentorship/requests');
+    return response.data;
+  } catch (err) {
+    return rejectWithValue(err.response.data.detail || 'Failed to fetch requests');
+  }
+});
+
+export const requestMentorship = createAsyncThunk('mentorship/request', async (data, { rejectWithValue }) => {
+  try {
+    const response = await API.post('/mentorship/request', data);
+    return response.data;
+  } catch (err) {
+      return rejectWithValue(err.response.data.detail || 'Failed to request mentorship');
+  }
+});
+
+export const fetchMentors = createAsyncThunk('mentorship/fetchMentors', async (_, { rejectWithValue }) => {
+  try {
+    const response = await API.get('/mentorship/mentors');
+    return response.data;
+  } catch (err) {
+    return rejectWithValue(err.response.data.detail || 'Failed to fetch mentors');
+  }
+});
+
+export const fetchMentorById = createAsyncThunk('mentorship/fetchById', async (id, { rejectWithValue }) => {
+    try {
+        const response = await API.get(`/mentorship/mentors/${id}`);
+        return response.data;
+    } catch (err) {
+        return rejectWithValue(err.response.data.detail || 'Failed to fetch mentor');
+    }
+});
+
+export const fetchIncomingRequests = createAsyncThunk('mentorship/fetchIncoming', async (_, { rejectWithValue }) => {
+    try {
+        const response = await API.get('/mentorship/requests/incoming');
+        return response.data;
+    } catch (err) {
+        return rejectWithValue(err.response.data.detail || 'Failed to fetch incoming requests');
+    }
+});
+
+export const updateRequestStatus = createAsyncThunk('mentorship/updateStatus', async ({ id, status }, { rejectWithValue }) => {
+    try {
+        const endpoint = status === 'Accepted' ? 'accept' : 'reject';
+        const response = await API.post(`/mentorship/requests/${id}/${endpoint}`);
+        return response.data;
+    } catch (err) {
+        return rejectWithValue(err.response.data.detail || 'Failed to update status');
+    }
+});
+
+const initialState = {
+  requests: [], // Outgoing
+  incomingRequests: [], // Incoming (Alumni view)
+  mentors: [],
+  currentMentor: null,
+  loading: false,
+  error: null,
+};
+
+const mentorshipSlice = createSlice({
+  name: 'mentorship',
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+        .addCase(fetchRequests.fulfilled, (state, action) => {
+            state.requests = action.payload;
+            state.loading = false;
+        })
+        .addCase(requestMentorship.fulfilled, (state, action) => {
+            state.requests.push(action.payload);
+        })
+        .addCase(fetchMentors.fulfilled, (state, action) => {
+            state.mentors = action.payload;
+        })
+        .addCase(fetchMentorById.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+            state.currentMentor = null;
+        })
+        .addCase(fetchMentorById.fulfilled, (state, action) => {
+            state.loading = false;
+            state.currentMentor = action.payload;
+        })
+        .addCase(fetchMentorById.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        })
+        // Incoming Requests (Alumni)
+        .addCase(fetchIncomingRequests.fulfilled, (state, action) => {
+            state.incomingRequests = action.payload;
+        })
+        .addCase(updateRequestStatus.fulfilled, (state, action) => {
+            // Update in incoming requests
+            const index = state.incomingRequests.findIndex(r => r.id === action.payload.id);
+            if (index !== -1) {
+                state.incomingRequests[index] = action.payload;
+            }
+             // Also update in outgoing if it happens to be the same list (mock overlap)
+             const outIndex = state.requests.findIndex(r => r.id === action.payload.id);
+             if (outIndex !== -1) {
+                 state.requests[outIndex] = action.payload;
+             }
+        });
+  },
+});
+
+export default mentorshipSlice.reducer;
