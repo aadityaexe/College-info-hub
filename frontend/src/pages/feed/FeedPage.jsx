@@ -100,19 +100,32 @@ const FeedPage = () => {
                     ))}
                 </div>
 
-                {showImageInput && (
-                    <div className="mt-3 relative">
-                        <input 
-                            type="text" 
-                            className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 pr-8 text-xs text-slate-600 focus:ring-1 focus:ring-amber-500 focus:border-amber-500 outline-none"
-                            placeholder="Paste image URL here..."
-                            value={imageUrl}
-                            onChange={(e) => setImageUrl(e.target.value)}
-                        />
+                {/* Hidden File Input */}
+                <input 
+                    type="file" 
+                    id="imageInput" 
+                    accept="image/*" 
+                    className="hidden" 
+                    onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                                setImageUrl(reader.result);
+                                setShowImageInput(true);
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    }}
+                />
+
+                {showImageInput && imageUrl && (
+                    <div className="mt-3 relative rounded-xl overflow-hidden border border-slate-200 group/preview">
+                        <img src={imageUrl} alt="Preview" className="w-full h-48 object-cover" />
                          <button 
                             type="button"
                             onClick={() => { setShowImageInput(false); setImageUrl(''); }}
-                            className="absolute right-2 top-2 text-slate-400 hover:text-red-500"
+                            className="absolute right-2 top-2 bg-black/50 hover:bg-red-500 text-white p-1.5 rounded-full transition-colors"
                         >
                             <X size={14} />
                         </button>
@@ -123,8 +136,8 @@ const FeedPage = () => {
                     <div className="flex space-x-2">
                         <button 
                             type="button" 
-                            onClick={() => setShowImageInput(!showImageInput)}
-                            className={`p-2 rounded-lg text-slate-400 hover:bg-amber-50 hover:text-amber-600 transition-colors ${showImageInput ? 'bg-amber-50 text-amber-600' : ''}`}
+                            onClick={() => document.getElementById('imageInput').click()}
+                            className={`p-2 rounded-lg text-slate-400 hover:bg-amber-50 hover:text-amber-600 transition-colors ${imageUrl ? 'bg-amber-50 text-amber-600' : ''}`}
                             title="Add Image"
                         >
                             <ImageIcon size={18} />

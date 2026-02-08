@@ -11,6 +11,7 @@ const MentorshipPage = () => {
   
   const [selectedMentor, setSelectedMentor] = useState(null);
   const [message, setMessage] = useState('');
+  const [selectedSlot, setSelectedSlot] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
@@ -25,19 +26,22 @@ const MentorshipPage = () => {
 
   const openRequestModal = (mentor) => {
       setSelectedMentor(mentor);
+      setSelectedSlot(null);
       setIsModalOpen(true);
   };
 
   const handleRequest = (e) => {
     e.preventDefault();
-    if(selectedMentor) {
+    if(selectedMentor && selectedSlot) {
         dispatch(requestMentorship({ 
             mentor_id: selectedMentor.id, 
             mentor_name: selectedMentor.name,
-            message 
+            message,
+            slot: selectedSlot
         }));
         setIsModalOpen(false);
         setMessage('');
+        setSelectedSlot(null);
         setSelectedMentor(null);
     }
   };
@@ -217,10 +221,28 @@ const MentorshipPage = () => {
                   
                   <form onSubmit={handleRequest}>
                       <div className="mb-6">
+                        <label className="block text-sm font-bold text-slate-700 mb-2">Select a Time Slot</label>
+                        <div className="grid grid-cols-2 gap-3 mb-4">
+                            {selectedMentor?.availableSlots?.map(slot => (
+                                <button
+                                    key={slot}
+                                    type="button"
+                                    onClick={() => setSelectedSlot(slot)}
+                                    className={`py-2 px-3 rounded-lg text-sm font-medium border transition-all ${
+                                        selectedSlot === slot 
+                                        ? 'bg-amber-500 text-white border-amber-500 shadow-md transform scale-105' 
+                                        : 'bg-white text-slate-600 border-slate-200 hover:border-amber-300 hover:bg-amber-50'
+                                    }`}
+                                >
+                                    {slot}
+                                </button>
+                            ))}
+                        </div>
+
                         <label className="block text-sm font-bold text-slate-700 mb-2">Your Message</label>
                         <textarea
                             className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-700 focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 resize-none placeholder-slate-400 outline-none transition-all custom-scrollbar font-medium"
-                            rows="6"
+                            rows="4"
                             placeholder="Introduce yourself and explain why you're seeking mentorship with this specific mentor..."
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
@@ -237,7 +259,8 @@ const MentorshipPage = () => {
                           </button>
                           <button 
                             type="submit" 
-                            className="px-8 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-amber-500 to-amber-600 rounded-xl shadow-lg hover:shadow-amber-500/20 hover:-translate-y-0.5 transition-all flex items-center"
+                            disabled={!selectedSlot || !message.trim()}
+                            className="px-8 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-amber-500 to-amber-600 rounded-xl shadow-lg hover:shadow-amber-500/20 hover:-translate-y-0.5 transition-all flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                               <span>Send Request</span>
                               <Send size={16} className="ml-2" />

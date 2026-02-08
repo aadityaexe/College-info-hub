@@ -161,7 +161,8 @@ export const mockMentors = [
         bio: 'Leading researcher in Paleontology with a passion for teaching. I can guide students interested in academic careers, PhD applications, and research methodologies.',
         education: 'Ph.D., University of Montana',
         experience: ['30+ Years Teaching', 'Published 50+ Papers', 'Grant Reviewer'],
-        availability: 'Weekends 10 AM - 2 PM'
+        availability: 'Weekends 10 AM - 2 PM',
+        availableSlots: ['Saturday 10:00 AM', 'Saturday 11:00 AM', 'Sunday 12:00 PM']
     },
     { 
         id: 2, 
@@ -172,7 +173,8 @@ export const mockMentors = [
         bio: 'Senior Security Architect. I help students break into the cybersecurity domain. I can review resumes and conduct mock interviews for security roles.',
         education: 'B.Tech CSE, Batch of 2015',
         experience: ['Security Architect at Cyberdyne', 'Pentester at NSA'],
-        availability: 'Weekdays 7 PM - 9 PM'
+        availability: 'Weekdays 7 PM - 9 PM',
+        availableSlots: ['Monday 7:00 PM', 'Wednesday 8:00 PM', 'Friday 7:30 PM']
     },
     { 
         id: 3, 
@@ -183,7 +185,8 @@ export const mockMentors = [
         bio: 'Founder & CEO. I mentor students with startup ideas. Pitch me your idea, and I will help you refine your business model and tech stack.',
         education: 'M.S. Electrical Engineering, MIT',
         experience: ['Founder, Stark Industries', 'Angel Investor'],
-        availability: 'Sunday Mornings'
+        availability: 'Sunday Mornings',
+        availableSlots: ['Sunday 9:00 AM', 'Sunday 10:30 AM']
     },
     { 
         id: 4, 
@@ -194,7 +197,8 @@ export const mockMentors = [
         bio: 'Group PM at Uber. transitioning from engineering to product? I can help you understand the PM mindset and crack PM interviews.',
         education: 'MBA, Stanford',
         experience: ['PM at Uber', 'SDE-2 at Google'],
-        availability: 'Saturday 4 PM - 6 PM'
+        availability: 'Saturday 4 PM - 6 PM',
+        availableSlots: ['Saturday 4:00 PM', 'Saturday 5:00 PM']
     }
 ];
 

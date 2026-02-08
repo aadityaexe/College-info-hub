@@ -15,13 +15,19 @@ const PostCard = ({ post }) => {
   const isLiked = post.liked_by?.includes(1); // Mock User ID 1
 
   const handleLike = () => {
+    // Optimistic update handled in slice or locally if needed, but slice is better for consistency across components
     dispatch(likePost(post.id));
   };
 
   const handleCommentSubmit = (e) => {
       e.preventDefault();
       if (commentText.trim()) {
-          dispatch(addComment({ postId: post.id, text: commentText }));
+          // Optimistic UI update could be done here, but slice handles it for simplicity
+          dispatch(addComment({ 
+              postId: post.id, 
+              text: commentText,
+              user: 'You' // Optimistic user name
+          }));
           setCommentText('');
       }
   };
