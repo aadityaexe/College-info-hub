@@ -55,7 +55,6 @@ const StudentDashboard = () => {
                     animate={{ opacity: 1, x: 0 }}
                     className="text-right hidden sm:block"
                 >
-                     <p className="text-sm font-bold text-amber-700 bg-amber-50 px-4 py-1.5 rounded-full uppercase tracking-widest border border-amber-100">Spring Semester</p>
                      <p className="text-xs text-slate-400 mt-2 font-serif italic">{new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}</p>
                 </motion.div>
             </div>

@@ -86,13 +86,6 @@ const MentorProfilePage = () => {
                             <Mail size={18} />
                             <span>Send Mail</span>
                         </button>
-                        <button 
-                            onClick={() => setIsMailModalOpen(true)}
-                            className="flex items-center justify-center space-x-2 bg-white text-slate-700 border border-slate-200 px-6 py-2.5 rounded-xl font-bold hover:bg-slate-50 hover:text-amber-600 hover:border-amber-200 transition-all shadow-sm"
-                        >
-                            <Mail size={18} />
-                            <span>Send Mail</span>
-                        </button>
                         {userRole === 'student' && (
                             <button 
                                 onClick={() => setIsRequestModalOpen(true)}
@@ -104,7 +97,6 @@ const MentorProfilePage = () => {
                         )}
                     </div>
                 </div>
-
                 <div className="mb-8">
                     <span className="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-100 uppercase tracking-wider">
                         <Award size={14} className="mr-2" />
