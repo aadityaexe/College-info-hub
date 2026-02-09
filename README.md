@@ -17,12 +17,18 @@ A comprehensive platform connecting students, alumni, and faculty to foster ment
 - **Job Posting**: Create and manage job opportunities for the community.
 - **Community Engagement**: Post updates, share insights, and interact with students.
 
+### 📅 Events & Community
+- **Event Discovery**: targeted events for Students and Alumni (Academic, Social, Career, Sports).
+- **RSVP System**: Interactive attendance tracking with real-time updates.
+- **Audience Targeting**: Events can be exclusive to Students, Alumni, or open to All.
+
 ### 🛡️ For Admins
 - **Admin Console**: Centralized control panel for platform management.
-- **User Management**: Approve/verify students, alumni, and faculty accounts.
+- **User Directory**: Consolidated view of all Students and Alumni with filtering and block/unblock capabilities.
+- **Event Management**: Create, Edit, and Delete events with precise audience targeting.
 - **Content Moderation**: Review and approve/reject jobs and posts.
-- **Reports**: Handle user reports for inappropriate content or behavior.
-- **System Settings**: Configure platform settings.
+- **Reports Dashboard**: Handle user reports for inappropriate content.
+- **System Settings**: Configure site metadata and maintenance mode.
 
 ## Tech Stack
 
