@@ -14,7 +14,8 @@ import {
   X,
   Bell,
   GraduationCap,
-  Mail
+  Mail,
+  Calendar
 } from 'lucide-react';
 import NotificationDropdown from './NotificationDropdown';
 
@@ -33,6 +34,7 @@ const StudentLayout = () => {
     const menuItems = [
         { to: '/student/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
         { to: '/student/feed', icon: Home, label: 'Community Feed' },
+        { to: '/student/events', icon: Calendar, label: 'Campus Events' },
         { to: '/student/jobs', icon: Briefcase, label: 'Find Jobs' },
         { to: '/student/mentorship', icon: Users, label: 'Mentorship' },
         { to: '/student/mail', icon: Mail, label: 'Internal Mail' },

@@ -27,6 +27,9 @@ import AdminPending from './pages/admin/AdminPending';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminJobs from './pages/admin/AdminJobs';
 import AdminReports from './pages/admin/AdminReports';
+import AdminSettings from './pages/admin/AdminSettings';
+import AdminEvents from './pages/admin/AdminEvents';
+import EventsPage from './pages/events/EventsPage';
 
 function App() {
   return (
@@ -45,6 +48,7 @@ function App() {
          <Route index element={<Navigate to="/student/dashboard" replace />} />
          <Route path="dashboard" element={<StudentDashboard />} />
          <Route path="feed" element={<FeedPage />} />
+         <Route path="events" element={<EventsPage />} />
          <Route path="jobs" element={<JobsPage />} />
          <Route path="jobs/:id" element={<JobDetailPage />} />
          <Route path="mentorship" element={<MentorshipPage />} />
@@ -58,6 +62,7 @@ function App() {
          <Route index element={<Navigate to="/alumni/dashboard" replace />} />
          <Route path="dashboard" element={<AlumniDashboard />} />
          <Route path="feed" element={<FeedPage />} />
+         <Route path="events" element={<EventsPage />} />
          <Route path="jobs" element={<JobsPage />} />
          <Route path="jobs/:id" element={<JobDetailPage />} />
          <Route path="mentorship" element={<MentorshipPage />} />
@@ -70,11 +75,12 @@ function App() {
       <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin']}><AdminLayout /></ProtectedRoute>}>
           <Route index element={<AdminDashboard />} />
           <Route path="pending" element={<AdminPending />} />
-          <Route path="students" element={<AdminUsers />} />
-          <Route path="alumni" element={<AdminUsers />} />
+          <Route path="events" element={<AdminEvents />} />
+          <Route path="events" element={<AdminEvents />} />
+          <Route path="users" element={<AdminUsers />} />
           <Route path="jobs" element={<AdminJobs />} />
           <Route path="reports" element={<AdminReports />} />
-          <Route path="settings" element={<AdminReports />} />
+          <Route path="settings" element={<AdminSettings />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

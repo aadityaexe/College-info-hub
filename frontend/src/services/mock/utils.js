@@ -6,7 +6,8 @@ import {
     mockMentors,
     mockUsers,
     mockApplications,
-    mockNotifications
+    mockNotifications,
+    mockEvents
 } from '../mockData';
 
 export const MOCK_VERSION = 'v2.2';
@@ -28,6 +29,7 @@ export const initializeMockDB = () => {
     initStorage('db_mentorship_requests', mockMentorshipRequests, true);
     initStorage('db_applications', mockApplications, true);
     initStorage('db_notifications', mockNotifications, true);
+    initStorage('db_events', mockEvents, true);
     initStorage('db_users', [ ...mockUsers, { id: 1, ...mockUser, status: 'Active' } ], true);
 };
 

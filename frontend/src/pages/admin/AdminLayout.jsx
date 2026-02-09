@@ -15,7 +15,8 @@ import {
     X,
     Bell,
     Briefcase,
-    Shield
+    Shield,
+    Calendar
 } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -32,9 +33,10 @@ const AdminLayout = () => {
     const menuItems = [
         { path: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
         { path: '/admin/pending', icon: UserCheck, label: 'Pending Approvals' },
+        { path: '/admin/events', icon: Calendar, label: 'Events' },
         { path: '/admin/jobs', icon: Briefcase, label: 'Job Board' }, 
-        { path: '/admin/students', icon: GraduationCap, label: 'Students' },
-        { path: '/admin/alumni', icon: Users, label: 'Alumni' },
+        { path: '/admin/jobs', icon: Briefcase, label: 'Job Board' }, 
+        { path: '/admin/users', icon: Users, label: 'Users' },
         { path: '/admin/reports', icon: FileWarning, label: 'Reports' },
         { path: '/admin/settings', icon: Settings, label: 'Settings' },
     ];

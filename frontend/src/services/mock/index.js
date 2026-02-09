@@ -5,6 +5,7 @@ import { handleJobs } from './jobs';
 import { handleMentorship } from './mentorship';
 import { handleAdmin } from './admin';
 import { handleReports } from './reports';
+import { handleEvents } from './events';
 
 // Initialize DB on load
 initializeMockDB();
@@ -29,7 +30,8 @@ export const mockAdapter = async (config) => {
         handleJobs(method, url, config) ||
         handleMentorship(method, url, config) ||
         handleAdmin(method, url, config) ||
-        handleReports(method, url, config);
+        handleReports(method, url, config) ||
+        handleEvents(method, url, config);
 
     if (response) {
         // If response is a promise (e.g. rejection), return it, else wrap in promise

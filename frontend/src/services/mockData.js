@@ -263,3 +263,41 @@ export const mockNotifications = [
         type: 'info'
     }
 ];
+
+export const mockEvents = [
+    {
+        id: 1,
+        title: 'Tech Symposium 2024',
+        type: 'Academic',
+        date: '2024-03-15',
+        time: '10:00 AM',
+        location: 'Auditorium A',
+        description: 'Annual technology symposium featuring keynote speakers from industry leaders.',
+        speakers: [{ name: 'Sundar Pichai', role: 'CEO, Google' }],
+        attendees: 120,
+        image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=1000',
+        audience: 'All'
+    },
+    {
+        id: 2,
+        title: 'Alumni Gala Dinner',
+        type: 'Social',
+        date: '2024-04-20',
+        time: '07:00 PM',
+        location: 'Grand Hotel',
+        attendees: 85,
+        image: 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&q=80&w=1000'
+    },
+    {
+        id: 3,
+        title: 'Career Fair',
+        type: 'Career',
+        date: '2024-05-10',
+        time: '09:00 AM',
+        location: 'Campus Grounds',
+        description: 'Connect with top recruiters and companies.',
+        speakers: [],
+        attendees: 300,
+        image: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=80&w=1000'
+    }
+];

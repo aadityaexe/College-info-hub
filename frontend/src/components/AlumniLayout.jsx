@@ -11,7 +11,8 @@ import {
   LayoutDashboard, 
   Settings,
   X,
-  GraduationCap
+  GraduationCap,
+  Calendar
 } from 'lucide-react';
 
 const SidebarItem = ({ to, icon: Icon, label, onClick }) => {
@@ -48,6 +49,7 @@ const AlumniLayout = () => {
     const menuItems = [
         { to: '/alumni/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
         { to: '/alumni/feed', icon: Home, label: 'Community Feed' },
+        { to: '/alumni/events', icon: Calendar, label: 'Alumni Events' },
         { to: '/alumni/jobs', icon: Briefcase, label: 'Jobs & Openings' },
         { to: '/alumni/mentorship', icon: Users, label: 'Mentorship Requests' },
         { to: '/alumni/profile', icon: Settings, label: 'My Profile' },
