@@ -1,10 +1,10 @@
 import axios from 'axios';
 import { mockAdapter } from './mock/index';
 
-const USE_MOCK = true; // Toggle this to switch between real and mock backend
+const USE_MOCK = false; // Toggle this to switch between real and mock backend
 
 const API = axios.create({
-  baseURL: 'http://localhost:8000/api',
+  baseURL: 'http://localhost:8000',
 });
 
 // Mock Adapter Logic

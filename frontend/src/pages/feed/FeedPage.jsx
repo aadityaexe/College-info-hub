@@ -4,9 +4,23 @@ import { fetchPosts, createPost } from '../../features/posts/postsSlice';
 import PostCard from '../../components/PostCard';
 import { Loader2, Send, Image as ImageIcon, Link as LinkIcon, X, Trophy, Briefcase, HelpCircle, Layers } from 'lucide-react';
 
+  const TabButton = ({ id, label, icon: Icon, activeTab, setActiveTab }) => (
+      <button 
+        onClick={() => setActiveTab(id)}
+        className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
+            activeTab === id 
+            ? 'bg-slate-800 text-white shadow-lg shadow-slate-900/10' 
+            : 'text-slate-500 hover:bg-white hover:text-amber-600'
+        }`}
+      >
+          <Icon size={16} />
+          <span>{label}</span>
+      </button>
+  );
+
 const FeedPage = () => {
   const dispatch = useDispatch();
-  const { posts, loading, error } = useSelector((state) => state.posts);
+  const { posts, loading } = useSelector((state) => state.posts);
   const [content, setContent] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [showImageInput, setShowImageInput] = useState(false);
@@ -41,29 +55,15 @@ const FeedPage = () => {
       return true;
   });
 
-  const TabButton = ({ id, label, icon: Icon }) => (
-      <button 
-        onClick={() => setActiveTab(id)}
-        className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
-            activeTab === id 
-            ? 'bg-slate-800 text-white shadow-lg shadow-slate-900/10' 
-            : 'text-slate-500 hover:bg-white hover:text-amber-600'
-        }`}
-      >
-          <Icon size={16} />
-          <span>{label}</span>
-      </button>
-  );
-
   return (
     <div className="max-w-2xl mx-auto py-8 px-4 md:px-0">
       
       {/* Tabs */}
       <div className="flex space-x-2 mb-8 overflow-x-auto pb-2 custom-scrollbar">
-          <TabButton id="all" label="All Posts" icon={Layers} />
-          <TabButton id="achievements" label="Achievements" icon={Trophy} />
-          <TabButton id="opportunities" label="Opportunities" icon={Briefcase} />
-          <TabButton id="questions" label="Questions" icon={HelpCircle} />
+          <TabButton id="all" label="All Posts" icon={Layers} activeTab={activeTab} setActiveTab={setActiveTab} />
+          <TabButton id="achievements" label="Achievements" icon={Trophy} activeTab={activeTab} setActiveTab={setActiveTab} />
+          <TabButton id="opportunities" label="Opportunities" icon={Briefcase} activeTab={activeTab} setActiveTab={setActiveTab} />
+          <TabButton id="questions" label="Questions" icon={HelpCircle} activeTab={activeTab} setActiveTab={setActiveTab} />
       </div>
 
       {/* Create Post Widget */}

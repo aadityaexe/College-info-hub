@@ -357,7 +357,7 @@ const AlumniDashboard = () => {
                                     <p className="text-sm text-slate-500 font-medium mb-3">{job.company} • {job.location}</p>
                                     <div className="flex items-center space-x-2 text-xs font-bold">
                                         <span className="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md">{job.type}</span>
-                                        <span className="text-slate-400 font-medium">Posted {new Date(job.posted_date || Date.now()).toLocaleDateString()}</span>
+                                        <span className="text-slate-400 font-medium pb-0.5">Posted {job.posted_date ? new Date(job.posted_date).toLocaleDateString() : 'Recently'}</span>
                                     </div>
                                 </div>
                                 <button 

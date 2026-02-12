@@ -5,33 +5,34 @@ import { logout } from '../features/auth/authSlice';
 import { LogOut, Menu, X, Home, Briefcase, Users, LayoutDashboard, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+const NavLink = ({ to, children, icon: Icon }) => {
+  const location = useLocation();
+  const isActive = location.pathname.startsWith(to);
+  return (
+    <Link 
+        to={to} 
+        className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 font-bold text-sm ${
+            isActive 
+            ? 'text-amber-700 bg-amber-50 shadow-sm shadow-amber-500/10' 
+            : 'text-slate-500 hover:text-amber-600 hover:bg-amber-50/50'
+        }`}
+    >
+        {Icon && <Icon size={18} />}
+        <span>{children}</span>
+    </Link>
+  );
+};
+
 const Navbar = () => {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const location = useLocation();
+  // location is now used in NavLink directly
   const [isOpen, setIsOpen] = useState(false);
 
   const handleLogout = () => {
     dispatch(logout());
     navigate('/login');
-  };
-
-  const NavLink = ({ to, children, icon: Icon }) => {
-      const isActive = location.pathname.startsWith(to);
-      return (
-        <Link 
-            to={to} 
-            className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 font-bold text-sm ${
-                isActive 
-                ? 'text-amber-700 bg-amber-50 shadow-sm shadow-amber-500/10' 
-                : 'text-slate-500 hover:text-amber-600 hover:bg-amber-50/50'
-            }`}
-        >
-            {Icon && <Icon size={18} />}
-            <span>{children}</span>
-        </Link>
-      );
   };
 
   return (
@@ -46,7 +47,7 @@ const Navbar = () => {
               <span className="text-2xl font-serif font-bold text-slate-800 tracking-tight group-hover:text-amber-600 transition-colors">College<span className="text-amber-600">Hub</span></span>
             </Link>
           </div>
-          <div className="hidden md:ml-10 md:flex md:items-center space-x-1">
+          <div className="hidden md:ml-10 md:items-center md:flex space-x-1">
              {user ? (
                 <>
                   <NavLink to={user.role === 'admin' ? '/admin' : user.role === 'alumni' ? '/alumni/dashboard' : '/student/dashboard'} icon={LayoutDashboard}>Dashboard</NavLink>

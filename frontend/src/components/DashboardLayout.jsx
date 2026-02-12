@@ -13,7 +13,7 @@ import {
   FileText, 
   Settings 
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+
 
 const SidebarItem = ({ to, icon: Icon, label, onClick }) => {
     const location = useLocation();
