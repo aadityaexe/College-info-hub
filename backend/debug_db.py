@@ -1,66 +1,88 @@
-import mysql.connector
-from mysql.connector import Error
+from app.database import SessionLocal, engine
+from app import models, utils
+import traceback
+import sys
+from datetime import datetime
 
-def create_server_connection(host_name, user_name, user_password):
-    connection = None
+def test_db():
+    print("Initializing Session...")
+    db = SessionLocal()
     try:
-        connection = mysql.connector.connect(
-            host=host_name,
-            user=user_name,
-            passwd=user_password
+        print("Creating tables (if not exist)...")
+        models.Base.metadata.create_all(bind=engine)
+        
+        # Check if user exists
+        existing_user = db.query(models.Student).filter(models.Student.email == "debug@test.com").first()
+        if existing_user:
+             print("User 'debug@test.com' already exists. Deleting...")
+             db.delete(existing_user)
+             db.commit()
+
+        print("Attempting to create user...")
+        hashed_pwd = utils.get_password_hash("password")
+        user = models.Student(
+            email="debug@test.com", 
+            name="Debug User", 
+            password=hashed_pwd, 
+            role="Student"
         )
-        print("MySQL Database connection successful")
-    except Error as err:
-        print(f"Error: '{err}'")
+        db.add(user)
+        db.commit()
+        print("✅ User created successfully!")
 
-    return connection
-
-def create_db_connection(host_name, user_name, user_password, db_name):
-    connection = None
-    try:
-        connection = mysql.connector.connect(
-            host=host_name,
-            user=user_name,
-            passwd=user_password,
-            database=db_name
+        # Create event
+        event = models.Event(
+            title="RSVP Test Event",
+            description="Test Description",
+            date="2024-12-31", 
+            audience="Student"
         )
-        print("MySQL Database connection successful")
-    except Error as err:
-        print(f"Error: '{err}'")
+        db.add(event)
+        db.commit() # Commit to get ID
+        print(f"✅ Event created! ID: {event.id}")
 
-    return connection
+        # Simulate RSVP
+        print("Simulating RSVP...")
+        attendee = models.EventAttendee(
+            event_id=event.id,
+            student_id=user.id,
+            status="going"
+        )
+        db.add(attendee)
+        # db.commit() # Commit attendee first?
 
-def execute_query(connection, query):
-    cursor = connection.cursor()
-    try:
-        cursor.execute(query)
-        connection.commit()
-        print("Query successful")
-    except Error as err:
-        print(f"Error: '{err}'")
+        # Calculate count
+        count = db.query(models.EventAttendee).filter(
+            models.EventAttendee.event_id == event.id,
+            (models.EventAttendee.status == "going") | (models.EventAttendee.status == "attending")
+        ).count()
+        print(f"Calculated Count: {count}")
 
-# Test 1: Connect to Server (no DB)
-print("--- Test 1: Connect to MySQL Server (root, no pass) ---")
-connection = create_server_connection("localhost", "root", "")
+        event.attendees = count
+        db.add(event) # Explicit add used
+        db.commit()
+        
+        # Verify persistence
+        db.refresh(event)
+        print(f"Event Attendees in DB: {event.attendees}")
+        
+        if event.attendees != 1:
+            print("❌ Count update FAILED!")
+        else:
+            print("✅ Count update SUCCESS!")
 
-if connection:
-    # Test 2: Check if DB exists
-    print("\n--- Test 2: Check for database 'college_hub' ---")
-    cursor = connection.cursor()
-    cursor.execute("SHOW DATABASES LIKE 'college_hub'")
-    result = cursor.fetchone()
-    if result:
-        print("Database 'college_hub' exists.")
-    else:
-        print("Database 'college_hub' does NOT exist.")
-        # Try to create it?
-        print("Attempting to create database...")
-        try:
-            cursor.execute("CREATE DATABASE college_hub")
-            print("Database 'college_hub' created successfully.")
-        except Error as err:
-            print(f"Failed to create database: {err}")
+        # Cleanup
+        db.delete(attendee)
+        db.delete(event)
+        db.delete(user)
+        db.commit()
+        
+    except Exception as e:
+        print("❌ Error:")
+        traceback.print_exc()
+        sys.exit(1)
+    finally:
+        db.close()
 
-    connection.close()
-else:
-    print("\nCould not connect to MySQL server. Check if it is running and password is empty.")
+if __name__ == "__main__":
+    test_db()

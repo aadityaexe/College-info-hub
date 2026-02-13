@@ -96,7 +96,7 @@ class EventBase(BaseModel):
     title: str
     type: Optional[str] = None
     audience: Optional[str] = None
-    date: Optional[date] = None
+    date: Optional[str] = None
     time: Optional[str] = None
     location: Optional[str] = None
     description: Optional[str] = None
@@ -108,6 +108,7 @@ class EventCreate(EventBase):
 class Event(EventBase):
     id: int
     attendees: int
+    user_rsvp: Optional[str] = None
 
     class Config:
         orm_mode = True

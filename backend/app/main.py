@@ -6,7 +6,7 @@ from .routers import auth, users, posts, events, jobs, mentorship
 # Create all tables (normally use Alembic for migrations, but this is simpler for initial setup)
 models.Base.metadata.create_all(bind=database.engine)
 
-app = FastAPI()
+app = FastAPI(debug=True)
 
 # CORS Middleware removed as requested
 

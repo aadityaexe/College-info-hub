@@ -5,7 +5,8 @@ import os
 
 # Update these with your actual database credentials
 # User: root, Password: (empty), Host: localhost, DB: college_hub
-SQLALCHEMY_DATABASE_URL = "mysql+mysqlconnector://root:@localhost/college_hub"
+SQLALCHEMY_DATABASE_URL = "mysql+mysqlconnector://root:sajnilol@localhost/college_hub"
+# SQLALCHEMY_DATABASE_URL = "sqlite:///./college_hub.db"
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,

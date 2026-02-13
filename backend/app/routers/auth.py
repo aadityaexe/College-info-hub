@@ -8,6 +8,31 @@ router = APIRouter(
     tags=["Authentication"]
 )
 
+@router.post("/register", response_model=schemas.Token)
+def register(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
+    # Check if user already exists
+    db_user = db.query(models.Student).filter(models.Student.email == user.email).first()
+    if db_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
+    hashed_password = utils.get_password_hash(user.password)
+    db_user = models.Student(
+        email=user.email,
+        name=user.name,
+        password=hashed_password,
+        role='Student' # Force student role for public registration
+    )
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    
+    # Generate token immediately
+    access_token_expires = timedelta(minutes=utils.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = utils.create_access_token(
+        data={"sub": db_user.email, "role": "student", "id": db_user.id}, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer", "role": "student", "id": db_user.id}
+
 @router.post("/login", response_model=schemas.Token)
 def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(database.get_db)):
     # Check student table

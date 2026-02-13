@@ -33,7 +33,12 @@ const EventsPage = () => {
     const fetchEvents = async () => {
         try {
             const res = await API.get('/events');
-            setEvents(res.data);
+            // Backend now returns user_rsvp (snake_case), map to userRsvp (camelCase)
+            const formattedEvents = res.data.map(evt => ({
+                ...evt,
+                userRsvp: evt.user_rsvp || evt.userRsvp
+            }));
+            setEvents(formattedEvents);
         } catch (err) {
             console.error("Failed to fetch events", err);
         } finally {
@@ -77,9 +82,8 @@ const EventsPage = () => {
 
     const filteredEvents = useMemo(() => {
         return events.filter(event => {
-            // Role-based filtering
-            if (userRole === 'student' && event.audience === 'Alumni') return false;
-            if (userRole === 'alumni' && event.audience === 'Student') return false;
+            // Role-based filtering is now handled by the backend!
+            // We trust the API to return only allowed events.
 
             const matchesFilter = filter === 'all' || 
                                   (filter === 'my events' ? event.userRsvp : true) || 

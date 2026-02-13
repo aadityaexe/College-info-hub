@@ -10,7 +10,7 @@ class Admin(Base):
     email = Column(String(100), unique=True, nullable=False)
     password = Column(String(255), nullable=False)
     phone = Column(String(15))
-    created_at = Column(TIMESTAMP, server_default=func.now())
+    created_at = Column(DateTime, server_default=func.now())
 
 class Student(Base):
     __tablename__ = "students"
@@ -21,7 +21,7 @@ class Student(Base):
     phone = Column(String(15))
     role = Column(Enum('Student', 'Alumni'), default='Student')
     status = Column(Enum('PENDING', 'APPROVED'), default='PENDING')
-    created_at = Column(TIMESTAMP, server_default=func.now())
+    created_at = Column(DateTime, server_default=func.now())
     reg_no = Column(String(50))
     course = Column(String(100))
     batch = Column(String(50))
@@ -105,7 +105,9 @@ class Event(Base):
     location = Column(String(255))
     description = Column(Text)
     image = Column(Text)
-    attendees = Column(Integer, default=0)
+    attendees = Column(Integer, default=0) # Total count cache/denormalized
+
+    attendees_relation = relationship("EventAttendee", back_populates="event")
 
 class Job(Base):
     __tablename__ = "jobs"
@@ -152,3 +154,14 @@ class Notification(Base):
     read = Column(Boolean, default=False)
     type = Column(String(50))
     created_at = Column(DateTime, server_default=func.now())
+
+class EventAttendee(Base):
+    __tablename__ = "event_attendees"
+    id = Column(Integer, primary_key=True, index=True)
+    event_id = Column(Integer, ForeignKey("events.id"))
+    student_id = Column(Integer, ForeignKey("students.id"))
+    status = Column(String(50), default='going') # going, interested, not_going
+    created_at = Column(DateTime, server_default=func.now())
+
+    event = relationship("Event", back_populates="attendees_relation")
+    student = relationship("Student")
