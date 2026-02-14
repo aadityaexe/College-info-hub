@@ -1,0 +1,157 @@
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+from typing import List
+from .. import models, schemas, utils, database
+from .users import get_current_user_from_token
+
+router = APIRouter(
+    prefix="/admin",
+    tags=["Admin"]
+)
+
+# Dependency to check if user is admin
+def get_current_admin(current_user: models.Student = Depends(get_current_user_from_token)):
+    # Check if user is actually an admin model OR has admin role
+    is_admin = False
+    if isinstance(current_user, models.Admin):
+        is_admin = True
+    elif hasattr(current_user, 'role') and str(current_user.role).lower() == 'admin':
+        is_admin = True
+        
+    if not is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to access this resource"
+        )
+    return current_user
+
+@router.get("/stats")
+def get_admin_stats(db: Session = Depends(database.get_db), current_user: models.Student = Depends(get_current_admin)):
+    total_students = db.query(models.Student).count()
+    # Assuming Alumni are Students with role='Alumni'
+    total_alumni = db.query(models.Student).filter(models.Student.role == 'Alumni').count()
+    pending_approvals = db.query(models.Student).filter(models.Student.status == 'Pending').count()
+    total_posts = db.query(models.Post).count()
+    
+    return {
+        "totalStudents": total_students,
+        "totalAlumni": total_alumni,
+        "pendingApprovals": pending_approvals,
+        "totalPosts": total_posts
+    }
+
+@router.get("/users", response_model=List[schemas.User])
+def get_all_users(db: Session = Depends(database.get_db), current_user: models.Student = Depends(get_current_admin)):
+    # Return all students (including alumni)
+    users = db.query(models.Student).all()
+    # Ensure role is string for response
+    for user in users:
+        if hasattr(user, "role") and user.role:
+            user.role = str(user.role).lower()
+    return users
+
+@router.post("/block/{user_id}")
+def toggle_block_user(user_id: int, db: Session = Depends(database.get_db), current_user: models.Student = Depends(get_current_admin)):
+    user = db.query(models.Student).filter(models.Student.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if user.status == 'Blocked':
+        user.status = 'Active'
+    else:
+        user.status = 'Blocked'
+        
+    db.commit()
+    return {"message": f"User status updated to {user.status}"}
+
+@router.get("/pending-users", response_model=List[schemas.User])
+def get_pending_users(db: Session = Depends(database.get_db), current_user: models.Student = Depends(get_current_admin)):
+    users = db.query(models.Student).filter(models.Student.status == 'Pending').all()
+    # Ensure role is string
+    for user in users:
+        if hasattr(user, "role") and user.role:
+            user.role = str(user.role).lower()
+    return users
+
+@router.post("/approve/{user_id}")
+def approve_user(user_id: int, db: Session = Depends(database.get_db), current_user: models.Student = Depends(get_current_admin)):
+    user = db.query(models.Student).filter(models.Student.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    user.status = 'Active'
+    db.commit()
+    return {"message": "User approved"}
+
+@router.post("/reject/{user_id}")
+def reject_user(user_id: int, db: Session = Depends(database.get_db), current_user: models.Student = Depends(get_current_admin)):
+    user = db.query(models.Student).filter(models.Student.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Effectively delete or mark rejected. For now, let's delete to keep it clean, or we could have a 'Rejected' status.
+    # Frontend logic for "Reject" usually implies deletion of the request or moving to rejected state.
+    # Let's delete for now as per typical "approve/reject" flow in simple apps.
+    db.delete(user)
+    db.commit()
+    return {"message": "User request rejected and removed"}
+
+@router.get("/jobs", response_model=List[schemas.Job])
+def get_all_jobs(db: Session = Depends(database.get_db), current_user: models.Student = Depends(get_current_admin)):
+    # Admin sees ALL jobs, even inactive ones
+    jobs = db.query(models.Job).order_by(models.Job.posted_date.desc()).all()
+    return jobs
+
+@router.delete("/jobs/{job_id}")
+def delete_job(job_id: int, db: Session = Depends(database.get_db), current_user: models.Student = Depends(get_current_admin)):
+    job = db.query(models.Job).filter(models.Job.id == job_id).first()
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    
+    db.delete(job)
+    db.commit()
+    return {"message": "Job deleted"}
+
+@router.get("/reports", response_model=List[schemas.Report])
+def get_reports(db: Session = Depends(database.get_db), current_user: models.Student = Depends(get_current_admin)):
+    reports = db.query(models.Report).order_by(models.Report.created_at.desc()).all()
+    return reports
+
+class ReportAction(schemas.BaseModel):
+    action: str # dismiss, delete_post, ban_user
+
+@router.post("/reports/{report_id}/action")
+def handle_report_action(report_id: int, action_data: ReportAction, db: Session = Depends(database.get_db), current_user: models.Student = Depends(get_current_admin)):
+    report = db.query(models.Report).filter(models.Report.id == report_id).first()
+    if not report:
+        raise HTTPException(status_code=404, detail="Report not found")
+        
+    action = action_data.action
+    
+    if action == 'dismiss':
+        report.status = 'Dismissed'
+    
+    elif action == 'delete_post':
+        if report.target_type == 'Post':
+            post = db.query(models.Post).filter(models.Post.id == report.target_id).first()
+            if post:
+                db.delete(post)
+        report.status = 'Resolved'
+        
+    elif action == 'ban_user':
+        # Assuming we can find the user from target_id if type is User, or from post -> user
+        user_to_ban = None
+        if report.target_type == 'User':
+            user_to_ban = db.query(models.Student).filter(models.Student.id == report.target_id).first()
+        elif report.target_type == 'Post':
+             post = db.query(models.Post).filter(models.Post.id == report.target_id).first()
+             if post:
+                 user_to_ban = db.query(models.Student).filter(models.Student.id == post.user_id).first()
+        
+        if user_to_ban:
+            user_to_ban.status = 'Blocked'
+            
+        report.status = 'Resolved'
+        
+    db.commit()
+    return {"message": f"Report action {action} taken"}

@@ -76,7 +76,6 @@ function App() {
           <Route index element={<AdminDashboard />} />
           <Route path="pending" element={<AdminPending />} />
           <Route path="events" element={<AdminEvents />} />
-          <Route path="events" element={<AdminEvents />} />
           <Route path="users" element={<AdminUsers />} />
           <Route path="jobs" element={<AdminJobs />} />
           <Route path="reports" element={<AdminReports />} />

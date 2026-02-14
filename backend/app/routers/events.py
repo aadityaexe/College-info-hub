@@ -14,9 +14,12 @@ def read_events(skip: int = 0, limit: int = 100, db: Session = Depends(database.
     query = db.query(models.Event)
     
     # Audience Filtering
-    if current_user.role == 'Student':
+    # If admin, show all (or maybe filtered? Let's show all for now)
+    if isinstance(current_user, models.Admin):
+        pass # Admin sees all
+    elif hasattr(current_user, 'role') and current_user.role == 'Student':
         query = query.filter(models.Event.audience != 'Alumni Only')
-    elif current_user.role == 'Alumni':
+    elif hasattr(current_user, 'role') and current_user.role == 'Alumni':
         query = query.filter(models.Event.audience != 'Students Only')
         
     events = query.order_by(models.Event.date.desc()).offset(skip).limit(limit).all()
@@ -110,3 +113,60 @@ def rsvp_event(event_id: int, rsvp: RsvpRequest, db: Session = Depends(database.
     db.commit()
     
     return {"message": "RSVP successful", "status": rsvp.status}
+
+@router.put("/{event_id}", response_model=schemas.Event)
+def update_event(event_id: int, event: schemas.EventCreate, db: Session = Depends(database.get_db), current_user: models.Student = Depends(get_current_user_from_token)):
+    # Permission check: Admin or Alumni
+    is_authorized = False
+    
+    if isinstance(current_user, models.Admin):
+        is_authorized = True
+    elif hasattr(current_user, 'role') and str(current_user.role) in ['Admin', 'Alumni']:
+        is_authorized = True
+        
+    if not is_authorized:
+        raise HTTPException(status_code=403, detail="Not authorized to update events")
+
+    db_event = db.query(models.Event).filter(models.Event.id == event_id).first()
+    if not db_event:
+        raise HTTPException(status_code=404, detail="Event not found")
+    
+    for key, value in event.dict().items():
+        setattr(db_event, key, value)
+    
+    db.commit()
+    db.refresh(db_event)
+    return schemas.Event(
+        id=db_event.id,
+        title=db_event.title,
+        type=db_event.type,
+        audience=db_event.audience,
+        date=str(db_event.date) if db_event.date else None,
+        time=db_event.time,
+        location=db_event.location,
+        description=db_event.description,
+        image=db_event.image,
+        attendees=db_event.attendees,
+        user_rsvp=None
+    )
+
+@router.delete("/{event_id}")
+def delete_event(event_id: int, db: Session = Depends(database.get_db), current_user: models.Student = Depends(get_current_user_from_token)):
+    # Permission check
+    is_authorized = False
+    
+    if isinstance(current_user, models.Admin):
+        is_authorized = True
+    elif hasattr(current_user, 'role') and str(current_user.role) in ['Admin', 'Alumni']:
+        is_authorized = True
+        
+    if not is_authorized:
+         raise HTTPException(status_code=403, detail="Not authorized to delete events")
+
+    db_event = db.query(models.Event).filter(models.Event.id == event_id).first()
+    if not db_event:
+        raise HTTPException(status_code=404, detail="Event not found")
+    
+    db.delete(db_event)
+    db.commit()
+    return {"message": "Event deleted"}

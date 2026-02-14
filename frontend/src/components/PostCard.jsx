@@ -141,7 +141,7 @@ const PostCard = ({ post }) => {
                         <div className="space-y-4 mb-6">
                             {post.comments?.map((comment, idx) => (
                                 <div key={idx} className="flex items-start space-x-3 text-sm">
-                                    <div className="font-bold text-slate-700 whitespace-nowrap">{comment.user || 'User'}:</div>
+                                    <div className="font-bold text-slate-700 whitespace-nowrap">{typeof comment.user === 'object' ? (comment.user.name || 'User') : (comment.user || 'User')}:</div>
                                     <div className="text-slate-600 bg-slate-50 px-3 py-2 rounded-r-xl rounded-bl-xl">{comment.text}</div>
                                 </div>
                             ))}

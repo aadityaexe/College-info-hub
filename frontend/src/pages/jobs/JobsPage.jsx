@@ -11,7 +11,7 @@ const JobsPage = () => {
   
   // Simple modal toggle for creating job (only if alumni/faculty)
   const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({ title: '', description: '', apply_link: '', location: '', type: 'Full-time' });
+  const [formData, setFormData] = useState({ title: '', company: '', description: '', apply_link: '', location: '', type: 'Full-time' });
 
   const canPost = user?.role === 'alumni' || user?.role === 'faculty' || user?.role === 'admin';
 
@@ -24,7 +24,7 @@ const JobsPage = () => {
     dispatch(createJob(formData)).then((res) => {
         if (!res.error) {
             setShowModal(false);
-            setFormData({ title: '', description: '', apply_link: '', location: '', type: 'Full-time' });
+            setFormData({ title: '', company: '', description: '', apply_link: '', location: '', type: 'Full-time' });
         }
     });
   };
@@ -99,6 +99,10 @@ const JobsPage = () => {
                     <div>
                         <label className="block text-sm font-bold text-slate-700 mb-2">Description</label>
                         <textarea className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 focus:border-amber-500 focus:bg-white focus:ring-4 focus:ring-amber-500/10 transition-all font-medium resize-none" placeholder="Job details..." rows="4" value={formData.description} onChange={e=>setFormData({...formData, description: e.target.value})} required />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-bold text-slate-700 mb-2">Company</label>
+                        <input className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 focus:border-amber-500 focus:bg-white focus:ring-4 focus:ring-amber-500/10 transition-all font-medium" placeholder="Company Name" value={formData.company} onChange={e=>setFormData({...formData, company: e.target.value})} required />
                     </div>
                     <div className="grid grid-cols-2 gap-5">
                         <div>

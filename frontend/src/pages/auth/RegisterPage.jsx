@@ -10,7 +10,7 @@ const RegisterPage = () => {
         email: '',
         password: '',
         role: 'student', // Default 'student'
-        regNo: '',
+        reg_no: '',
         course: 'B.Tech',
         batch: '2022-2026'
     });
@@ -130,7 +130,7 @@ const RegisterPage = () => {
                             </div>
                             <div>
                                 <label className="block text-sm font-bold text-slate-700 mb-2">Registration No.</label>
-                                <input type="text" name="regNo" required className="w-full rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white shadow-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 p-3 outline-none transition-all font-medium text-slate-800" placeholder="e.g. 2022BTCSE001" onChange={handleChange} />
+                                <input type="text" name="reg_no" required className="w-full rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white shadow-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 p-3 outline-none transition-all font-medium text-slate-800" placeholder="e.g. 2022BTCSE001" onChange={handleChange} />
                             </div>
                         </div>
 

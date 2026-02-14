@@ -15,7 +15,7 @@ const LoginPage = () => {
   useEffect(() => {
     if (isAuthenticated) {
         dispatch(fetchProfile()).then((action) => {
-             const userRole = action.payload?.role;
+             const userRole = action.payload?.role?.toLowerCase();
              if (userRole === 'admin') navigate('/admin');
              else if (userRole === 'alumni' || userRole === 'faculty') navigate('/alumni/dashboard');
              else navigate('/student/dashboard'); // Default
@@ -59,9 +59,9 @@ const LoginPage = () => {
             <div className="bg-amber-50/50 border border-amber-100 rounded-xl p-4 mb-8 text-xs text-amber-900 space-y-2">
                 <p className="font-bold uppercase tracking-wider text-amber-600 mb-1">Demo Credentials</p>
                 <div className="space-y-1 font-mono text-slate-600">
-                    <p><span className="font-bold text-slate-800">Student:</span> rahul@example.com / pass</p>
-                    <p><span className="font-bold text-slate-800">Alumni:</span> anita@example.com / pass</p>
-                    <p><span className="font-bold text-slate-800">Admin:</span> admin@college.edu / admin123</p>
+                    <p><span className="font-bold text-slate-800">Student:</span> student1@test.com / password</p>
+                    <p><span className="font-bold text-slate-800">Alumni:</span> alumni1@test.com / password</p>
+                    <p><span className="font-bold text-slate-800">Admin:</span> admin@collegehub.com / admin123</p>
                 </div>
             </div>
 

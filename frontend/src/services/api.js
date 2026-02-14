@@ -16,9 +16,27 @@ if (USE_MOCK) {
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
+    // console.log("Header Token:", token); // Debug token
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
+
+// Add a response interceptor to handle 401 Unauthorized
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      console.warn("Unauthorized access - redirecting to login");
+      localStorage.removeItem('token');
+      // Redirect to login - using window.location is simple and effective here
+      // Alternatively, we could dispatch a redux action if we had access to store
+      if (window.location.pathname !== '/login' && window.location.pathname !== '/admin/login') {
+          window.location.href = '/login'; 
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default API;

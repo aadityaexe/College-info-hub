@@ -47,7 +47,7 @@ const AdminPending = () => {
     const filteredUsers = pendingUsers.filter(user => 
         user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.regNo?.toLowerCase().includes(searchTerm.toLowerCase())
+        (user.reg_no || user.regNo)?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const PendingCard = ({ user }) => (
@@ -87,7 +87,7 @@ const AdminPending = () => {
                     </div>
                     <div className="flex items-center text-sm text-slate-600">
                          <GraduationCap size={16} className="mr-2 text-slate-400" />
-                         <span className="font-mono text-xs bg-white px-2 py-1 rounded border border-slate-200">{user.regNo}</span>
+                         <span className="font-mono text-xs bg-white px-2 py-1 rounded border border-slate-200">{user.reg_no || user.regNo}</span>
                     </div>
                     <div className="flex items-center text-xs text-slate-400">
                         <Clock size={14} className="mr-2" />

@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 const AdminUsers = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTab, setActiveTab] = useState('all'); // all, student, alumni
 
@@ -17,8 +18,10 @@ const AdminUsers = () => {
         try {
             const res = await API.get('/admin/users');
             setUsers(res.data);
+            setError(null);
         } catch (err) {
             console.error(err);
+            setError(err.message || "Failed to fetch users");
         } finally {
             setLoading(false);
         }
@@ -41,7 +44,7 @@ const AdminUsers = () => {
     const filteredUsers = users.filter(user => {
         const matchesSearch = user.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
                               user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                              user.regNo?.toLowerCase().includes(searchTerm.toLowerCase());
+                              (user.reg_no || user.regNo)?.toLowerCase().includes(searchTerm.toLowerCase());
         
         const matchesTab = activeTab === 'all' || user.role === activeTab;
         const isNotPending = user.status !== 'Pending';
@@ -75,7 +78,7 @@ const AdminUsers = () => {
                         <Mail size={12} className="mr-1.5" />
                         {user.email}
                     </p>
-                    <p className="text-xs text-slate-400 font-mono mt-1 tracking-wide">{user.regNo}</p>
+                    <p className="text-xs text-slate-400 font-mono mt-1 tracking-wide">{user.reg_no || user.regNo}</p>
                 </div>
             </div>
 
@@ -150,6 +153,11 @@ const AdminUsers = () => {
             {/* Grid */}
             {loading ? (
                 <div className="flex justify-center py-20"><Loader2 className="animate-spin text-amber-500" size={40} /></div>
+            ) : error ? (
+                <div className="text-center py-20 bg-red-50 rounded-3xl border border-red-100">
+                     <p className="text-red-600 font-bold">Error loading users: {error}</p>
+                     <p className="text-red-400 text-sm mt-2">Please check your network or backend connection.</p>
+                </div>
             ) : filteredUsers.length === 0 ? (
                 <div className="text-center py-20 bg-white rounded-3xl border border-slate-100 border-dashed">
                     <div className="h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-300">

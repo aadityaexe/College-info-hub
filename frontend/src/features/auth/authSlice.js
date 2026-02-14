@@ -4,11 +4,7 @@ import API from '../../services/api';
 // Thunks
 export const loginUser = createAsyncThunk('auth/login', async (userData, { rejectWithValue }) => {
   try {
-    // Expects email and password
-    // Backend expects OAuth form default? Or JSON?
-    // We implemented 'token' endpoint for JSON or 'login' for Form.
-    // Let's use the JSON one 'token' if I created it, or 'login' with form data.
-    // In auth.py I created /token which accepts JSON.
+    // Send login request to the backend
     const response = await API.post('/auth/token', userData);
     return response.data;
   } catch (err) {
@@ -87,10 +83,14 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(registerUser.fulfilled, (state) => {
+      .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
-        // Depending on backend, might need to login after register or it returns token?
-        // My backend register returns User, not token. So user must login.
+        // Auto-login after registration
+        if (action.payload.access_token) {
+            state.token = action.payload.access_token;
+            state.isAuthenticated = true;
+            localStorage.setItem('token', action.payload.access_token);
+        }
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
@@ -99,8 +99,7 @@ const authSlice = createSlice({
       // Profile
       .addCase(fetchProfile.fulfilled, (state, action) => {
         state.user = action.payload;
-        state.user = action.payload;
-        state.role = action.payload.role;
+        state.role = action.payload.role ? action.payload.role.toLowerCase() : null;
       })
       // Update Profile
       .addCase(updateProfile.fulfilled, (state, action) => {

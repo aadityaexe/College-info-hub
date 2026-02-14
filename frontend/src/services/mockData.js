@@ -68,7 +68,7 @@ export const mockUser = {
   full_name: 'Aditya Kumar',
   role: 'student',
   avatar: 'A',
-  regNo: '2023BTCSE001',
+  reg_no: '2023BTCSE001',
   course: 'B.Tech CSE',
   batch: '2023-2027'
 };
@@ -222,11 +222,11 @@ export const mockMentorshipRequests = [
 ];
 
 export const mockUsers = [
-    { id: 101, name: 'Rahul Verma', email: 'rahul@example.com', role: 'student', regNo: '2023BTCSE045', course: 'B.Tech', batch: '2023-2027', status: 'Active' },
-    { id: 102, name: 'Anita Desai', email: 'anita@example.com', role: 'alumni', regNo: '2019BTCSE012', course: 'B.Tech', batch: '2019-2023', status: 'Active' },
-    { id: 103, name: 'Sameer Khan', email: 'sam@example.com', role: 'student', regNo: '2023BBA005', course: 'BBA', batch: '2023-2026', status: 'Pending' },
-    { id: 104, name: 'Vikram Singh', email: 'vikram@example.com', role: 'alumni', regNo: '2018MECH001', course: 'B.Tech Mech', batch: '2018-2022', status: 'Blocked' },
-    { id: 105, name: 'Priya Sharma', email: 'priya@example.com', role: 'student', regNo: '2024MBA022', course: 'MBA', batch: '2024-2026', status: 'Active' }
+    { id: 101, name: 'Rahul Verma', email: 'rahul@example.com', role: 'student', reg_no: '2023BTCSE045', course: 'B.Tech', batch: '2023-2027', status: 'Active' },
+    { id: 102, name: 'Anita Desai', email: 'anita@example.com', role: 'alumni', reg_no: '2019BTCSE012', course: 'B.Tech', batch: '2019-2023', status: 'Active' },
+    { id: 103, name: 'Sameer Khan', email: 'sam@example.com', role: 'student', reg_no: '2023BBA005', course: 'BBA', batch: '2023-2026', status: 'Pending' },
+    { id: 104, name: 'Vikram Singh', email: 'vikram@example.com', role: 'alumni', reg_no: '2018MECH001', course: 'B.Tech Mech', batch: '2018-2022', status: 'Blocked' },
+    { id: 105, name: 'Priya Sharma', email: 'priya@example.com', role: 'student', reg_no: '2024MBA022', course: 'MBA', batch: '2024-2026', status: 'Active' }
 ];
 
 export const mockApplications = [

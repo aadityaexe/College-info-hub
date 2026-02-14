@@ -30,7 +30,7 @@ export const likePost = createAsyncThunk('posts/likePost', async (postId, { reje
 
 export const addComment = createAsyncThunk('posts/addComment', async ({ postId, text }, { rejectWithValue }) => {
   try {
-    const response = await API.post(`/posts/${postId}/comment`, { text });
+    const response = await API.post(`/posts/${postId}/comments`, { text });
     return { postId, comment: response.data };
   } catch (err) {
     return rejectWithValue(err.response.data.detail || 'Failed to add comment');
@@ -93,6 +93,11 @@ const postsSlice = createSlice({
                  post.liked_by = post.liked_by.filter(id => id !== currentUserId);
              }
          }
+      })
+      .addCase(likePost.rejected, (state, action) => {
+          // Could rollback optimistic update here if we stored previous state
+          // For now, we just log or set error, maybe toast notification
+          console.error("Like failed:", action.payload);
       })
       // Comment
       .addCase(addComment.fulfilled, (state, action) => {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { fetchProfile } from '../../features/auth/authSlice';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Briefcase, MessageCircle, Star, ArrowRight, CheckCircle, Clock, Calendar, X, Send, Trash2 } from 'lucide-react';
 import { fetchIncomingRequests } from '../../features/mentorship/mentorshipSlice';
@@ -151,10 +152,16 @@ const AlumniDashboard = () => {
     useEffect(() => {
         dispatch(fetchIncomingRequests());
         dispatch(fetchJobs());
-    }, [dispatch]);
+        // Reload user if missing (page refresh scenario)
+        if (!user && localStorage.getItem('token')) {
+             dispatch(fetchProfile());
+        }
+    }, [dispatch, user]);
 
     const handleCreateJob = (jobData) => {
-        dispatch(createJob({ ...jobData, posted_by: user.name }))
+        // Backend handles posted_by from token if missing here
+        const authorName = user?.name || 'Alumni';
+        dispatch(createJob({ ...jobData, posted_by: authorName }))
             .then(() => {
                 setIsJobModalOpen(false);
                 setSuccessMsg('Job Posted Successfully!');
@@ -341,7 +348,12 @@ const AlumniDashboard = () => {
              </div>
              
              <div className="mt-8 glass-panel rounded-3xl p-8 border border-white/60 bg-white/70 shadow-xl shadow-amber-900/5">
-                <h2 className="text-2xl font-serif font-bold text-slate-800 mb-8">Manage Posted Jobs</h2>
+                <div className="flex justify-between items-center mb-8">
+                    <h2 className="text-2xl font-serif font-bold text-slate-800">Manage Posted Jobs</h2>
+                    <button onClick={() => setIsJobModalOpen(true)} className="text-amber-600 text-sm font-bold hover:text-amber-700 flex items-center bg-amber-50 px-4 py-2 rounded-lg transition hover:bg-amber-100 border border-amber-100/50">
+                        <Briefcase size={16} className="mr-2"/> Post Opportunity
+                    </button>
+                </div>
                 {myJobs.length === 0 ? (
                      <div className="p-12 text-center bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
                         <Briefcase size={40} className="mx-auto text-slate-300 mb-3"/>

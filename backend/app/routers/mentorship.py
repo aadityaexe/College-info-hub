@@ -33,13 +33,16 @@ def create_mentorship_request(request: schemas.MentorshipRequestCreate, db: Sess
     db.refresh(db_request)
     return db_request
 
+@router.get("/requests/incoming", response_model=List[schemas.MentorshipRequest])
+def read_incoming_requests(db: Session = Depends(database.get_db), current_user: models.Student = Depends(get_current_user_from_token)):
+    # Requests sent TO this user (as a mentor)
+    requests = db.query(models.MentorshipRequest).filter(models.MentorshipRequest.mentor_id == current_user.id).all()
+    return requests
+
 @router.get("/requests", response_model=List[schemas.MentorshipRequest])
 def read_my_requests(db: Session = Depends(database.get_db), current_user: models.Student = Depends(get_current_user_from_token)):
-    # Get requests sent by student OR received by mentor (if user is alumni)
-    if current_user.role == 'Alumni':
-        requests = db.query(models.MentorshipRequest).filter(models.MentorshipRequest.mentor_id == current_user.id).all()
-    else:
-        requests = db.query(models.MentorshipRequest).filter(models.MentorshipRequest.student_id == current_user.id).all()
+    # Get requests sent BY this student
+    requests = db.query(models.MentorshipRequest).filter(models.MentorshipRequest.student_id == current_user.id).all()
     return requests
 
 @router.put("/requests/{request_id}")

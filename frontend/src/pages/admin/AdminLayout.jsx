@@ -35,7 +35,7 @@ const AdminLayout = () => {
         { path: '/admin/pending', icon: UserCheck, label: 'Pending Approvals' },
         { path: '/admin/events', icon: Calendar, label: 'Events' },
         { path: '/admin/jobs', icon: Briefcase, label: 'Job Board' }, 
-        { path: '/admin/jobs', icon: Briefcase, label: 'Job Board' }, 
+
         { path: '/admin/users', icon: Users, label: 'Users' },
         { path: '/admin/reports', icon: FileWarning, label: 'Reports' },
         { path: '/admin/settings', icon: Settings, label: 'Settings' },

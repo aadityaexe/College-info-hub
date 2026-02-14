@@ -5,7 +5,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Loader2, ShieldCheck } from 'lucide-react';
 
 const AdminLoginPage = () => {
-  const [email, setEmail] = useState('admin@college.edu');
+  const [email, setEmail] = useState('admin@collegehub.com');
   const [password, setPassword] = useState('admin123'); // Pre-filled for convenience as requested
   
   const dispatch = useDispatch();

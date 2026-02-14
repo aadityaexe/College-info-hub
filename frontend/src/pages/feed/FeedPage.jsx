@@ -49,9 +49,9 @@ const FeedPage = () => {
 
   const filteredPosts = posts.filter(post => {
       if (activeTab === 'all') return true;
-      if (activeTab === 'achievements') return post.tags?.some(t => t.toLowerCase().includes('achievement')) || post.title?.toLowerCase().includes('success');
-      if (activeTab === 'opportunities') return post.tags?.some(t => t.toLowerCase().includes('vacancy') || t.toLowerCase().includes('internship') || t.toLowerCase().includes('job'));
-      if (activeTab === 'questions') return post.tags?.some(t => t.toLowerCase().includes('question') || t.toLowerCase().includes('help'));
+      if (activeTab === 'achievements') return post.type === 'achievement' || post.tags?.some(t => t.toLowerCase().includes('achievement')) || post.title?.toLowerCase().includes('success');
+      if (activeTab === 'opportunities') return post.type === 'vacancy' || post.tags?.some(t => t.toLowerCase().includes('vacancy')) || post.title?.toLowerCase().includes('job');
+      if (activeTab === 'questions') return post.type === 'question' || post.tags?.some(t => t.toLowerCase().includes('question')) || post.title?.toLowerCase().includes('help');
       return true;
   });
 
