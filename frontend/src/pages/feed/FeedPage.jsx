@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchPosts, createPost } from '../../features/posts/postsSlice';
 import PostCard from '../../components/PostCard';
-import { Loader2, Send, Image as ImageIcon, Link as LinkIcon, X, Trophy, Briefcase, HelpCircle, Layers } from 'lucide-react';
+import SkeletonCard from '../../components/SkeletonCard';
+import { Send, Image as ImageIcon, X, Trophy, Briefcase, HelpCircle, Layers } from 'lucide-react';
 
   const TabButton = ({ id, label, icon: Icon, activeTab, setActiveTab }) => (
       <button 
@@ -75,7 +76,7 @@ const FeedPage = () => {
             </div>
             <form onSubmit={handlePostSubmit} className="flex-1">
                 <textarea 
-                    className="w-full bg-white/50 border border-amber-900/10 rounded-xl focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 resize-none p-4 text-slate-700 placeholder-slate-400 transition-all shadow-inner text-sm font-medium"
+                    className="w-full bg-white/50 border border-amber-900/10 rounded-xl focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 resize-none p-4 text-slate-700 placeholder-slate-400 transition-all shadow-inner text-sm font-medium outline-none"
                     rows={showImageInput ? 2 : 3}
                     placeholder={`What's on your mind? Share an ${activeTab === 'all' ? 'update' : activeTab.slice(0, -1)}...`}
                     value={content}
@@ -83,13 +84,13 @@ const FeedPage = () => {
                 ></textarea>
 
                 {/* Post Type Selector */}
-                <div className="flex gap-2 mt-3 overflow-x-auto pb-1">
+                <div className="flex gap-2 mt-3 overflow-x-auto pb-1 scrollbar-hide">
                     {['general', 'achievement', 'vacancy', 'question'].map(type => (
                         <button
                             key={type}
                             type="button"
                             onClick={() => setPostType(type)}
-                            className={`px-3 py-1 rounded-lg text-xs font-bold border transition-colors capitalize ${
+                            className={`px-3 py-1 rounded-lg text-[10px] font-bold border transition-colors capitalize whitespace-nowrap ${
                                 postType === type 
                                 ? 'bg-amber-100 text-amber-800 border-amber-200' 
                                 : 'bg-slate-50 text-slate-500 border-slate-200 hover:border-amber-200'
@@ -120,7 +121,7 @@ const FeedPage = () => {
                 />
 
                 {showImageInput && imageUrl && (
-                    <div className="mt-3 relative rounded-xl overflow-hidden border border-slate-200 group/preview">
+                    <div className="mt-3 relative rounded-xl overflow-hidden border border-slate-200 group/preview animate-in zoom-in duration-300">
                         <img src={imageUrl} alt="Preview" className="w-full h-48 object-cover" />
                          <button 
                             type="button"
@@ -159,7 +160,11 @@ const FeedPage = () => {
 
       {/* Feed List */}
       {loading && posts.length === 0 ? (
-        <div className="flex justify-center p-12"><Loader2 className="animate-spin text-amber-500" size={40} /></div>
+        <div className="space-y-6">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <SkeletonCard key={i} avatar lines={4} wide />
+          ))}
+        </div>
       ) : (
         <div className="space-y-6">
             {filteredPosts.map(post => (

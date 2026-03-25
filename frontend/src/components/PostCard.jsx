@@ -103,7 +103,7 @@ const PostCard = ({ post }) => {
           {post.content}
         </p>
 
-        {post.image && (
+         {post.image && (
             <div className="mb-6 rounded-2xl overflow-hidden border border-slate-100 shadow-sm relative group/image">
                 <img src={post.image} alt="Post content" className="w-full h-auto object-cover max-h-96" />
                 <div className="absolute inset-0 bg-black/0 group-hover/image:bg-black/5 transition-colors"></div>
@@ -120,7 +120,7 @@ const PostCard = ({ post }) => {
                 className="flex items-center space-x-2 px-3 py-2 rounded-xl hover:bg-slate-50 hover:text-blue-600 transition-colors"
             >
                 <MessageCircle size={18} />
-                <span className="text-sm font-medium">{post.comments?.length || 0} Comments</span>
+                <span className="text-sm font-medium">{post.comments?.length || 0}</span>
             </button>
             <button onClick={handleShare} className="flex items-center space-x-2 px-3 py-2 rounded-xl hover:bg-slate-50 hover:text-emerald-600 transition-colors">
                 <Share2 size={18} />

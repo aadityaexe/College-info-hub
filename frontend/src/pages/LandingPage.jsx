@@ -19,7 +19,7 @@ const FeatureCard = ({ icon: Icon, title, description, color }) => (
 
 const LandingPage = () => {
     return (
-        <div className="flex flex-col min-h-screen overflow-hidden">
+        <div className="flex flex-col min-h-screen overflow-hidden bg-background text-text-main transition-colors duration-500">
             {/* Hero Section */}
             <section className="relative pt-20 pb-40 md:py-32 overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-full -z-10">
@@ -38,9 +38,9 @@ const LandingPage = () => {
                     </motion.div>
                     
                     <motion.h1 
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.8 }}
                         className="text-5xl md:text-7xl lg:text-8xl font-serif font-extrabold text-slate-900 mb-8 tracking-tight leading-[1.1]"
                     >
                         Connect.<br className="md:hidden" /> Learn. <br/>
@@ -94,7 +94,7 @@ const LandingPage = () => {
             </section>
 
             {/* Features Grid */}
-            <section className="py-24 bg-white relative">
+            <section className="py-24 bg-white relative transition-colors duration-500">
                 <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
                      <div className="absolute top-[20%] right-0 w-[500px] h-[500px] bg-slate-50 rounded-full blur-3xl opacity-50"></div>
                 </div>

@@ -28,16 +28,17 @@ def get_current_admin(current_user: models.Student = Depends(get_current_user_fr
 @router.get("/stats")
 def get_admin_stats(db: Session = Depends(database.get_db), current_user: models.Student = Depends(get_current_admin)):
     total_students = db.query(models.Student).count()
-    # Assuming Alumni are Students with role='Alumni'
     total_alumni = db.query(models.Student).filter(models.Student.role == 'Alumni').count()
     pending_approvals = db.query(models.Student).filter(models.Student.status == 'Pending').count()
     total_posts = db.query(models.Post).count()
-    
+    pending_posts = db.query(models.Post).filter(models.Post.is_approved == False).count()
+
     return {
         "totalStudents": total_students,
         "totalAlumni": total_alumni,
         "pendingApprovals": pending_approvals,
-        "totalPosts": total_posts
+        "totalPosts": total_posts,
+        "pendingPosts": pending_posts
     }
 
 @router.get("/users", response_model=List[schemas.User])
@@ -111,6 +112,83 @@ def delete_job(job_id: int, db: Session = Depends(database.get_db), current_user
     db.delete(job)
     db.commit()
     return {"message": "Job deleted"}
+
+
+# ─── Post Moderation ──────────────────────────────────────────────────────────
+
+@router.get("/posts/pending", response_model=List[schemas.Post])
+def get_pending_posts(
+    db: Session = Depends(database.get_db),
+    current_user: models.Student = Depends(get_current_admin)
+):
+    """List all posts awaiting approval, newest first."""
+    return (
+        db.query(models.Post)
+        .filter(models.Post.is_approved == False)
+        .order_by(models.Post.created_at.desc())
+        .all()
+    )
+
+
+@router.get("/posts", response_model=List[schemas.Post])
+def get_all_posts(
+    db: Session = Depends(database.get_db),
+    current_user: models.Student = Depends(get_current_admin)
+):
+    """Admin can see ALL posts including unapproved ones."""
+    return db.query(models.Post).order_by(models.Post.created_at.desc()).all()
+
+
+@router.post("/posts/{post_id}/approve", response_model=schemas.Post)
+def approve_post(
+    post_id: int,
+    db: Session = Depends(database.get_db),
+    current_user: models.Student = Depends(get_current_admin)
+):
+    """Approve a post — it becomes visible in the public feed."""
+    from datetime import datetime
+    post = db.query(models.Post).filter(models.Post.id == post_id).first()
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+
+    post.is_approved = True
+    post.approved_at = datetime.utcnow()
+    post.approved_by = getattr(current_user, 'name', 'Admin')
+
+    # Notify the author
+    notif = models.Notification(
+        user_id=post.user_id,
+        text="Your post has been approved and is now visible to the community!",
+        type="post"
+    )
+    db.add(notif)
+    db.commit()
+    db.refresh(post)
+    return post
+
+
+@router.delete("/posts/{post_id}")
+def reject_post(
+    post_id: int,
+    db: Session = Depends(database.get_db),
+    current_user: models.Student = Depends(get_current_admin)
+):
+    """Reject (delete) a post — typically for content that violates guidelines."""
+    post = db.query(models.Post).filter(models.Post.id == post_id).first()
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+
+    # Notify the author about rejection
+    notif = models.Notification(
+        user_id=post.user_id,
+        text="Your recent post was not approved. It may have violated community guidelines.",
+        type="post"
+    )
+    db.add(notif)
+    db.delete(post)
+    db.commit()
+    return {"message": "Post rejected and removed"}
+
 
 @router.get("/reports", response_model=List[schemas.Report])
 def get_reports(db: Session = Depends(database.get_db), current_user: models.Student = Depends(get_current_admin)):

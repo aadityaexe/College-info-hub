@@ -18,8 +18,10 @@ import {
   Calendar
 } from 'lucide-react';
 import NotificationDropdown from './NotificationDropdown';
+import { useNotificationSocket } from '../hooks/useNotificationSocket';
 
 const StudentLayout = () => {
+    useNotificationSocket(); // Real-time notifications
     const { user } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
     const navigate = useNavigate();

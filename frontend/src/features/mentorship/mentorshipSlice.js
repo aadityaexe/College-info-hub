@@ -46,13 +46,12 @@ export const fetchIncomingRequests = createAsyncThunk('mentorship/fetchIncoming'
     }
 });
 
-export const updateRequestStatus = createAsyncThunk('mentorship/updateStatus', async ({ id, status }, { rejectWithValue }) => {
+export const updateRequestStatus = createAsyncThunk('mentorship/updateStatus', async ({ id, status, notes }, { rejectWithValue }) => {
     try {
-        const endpoint = status === 'Accepted' ? 'accept' : 'reject';
-        const response = await API.post(`/mentorship/requests/${id}/${endpoint}`);
+        const response = await API.put(`/mentorship/requests/${id}`, { status, notes });
         return response.data;
     } catch (err) {
-        return rejectWithValue(err.response.data.detail || 'Failed to update status');
+        return rejectWithValue(err.response?.data?.detail || 'Failed to update status');
     }
 });
 

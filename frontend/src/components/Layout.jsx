@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../features/auth/authSlice';
 import { LogOut, Menu, X, Home, Briefcase, Users, LayoutDashboard, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Toaster } from 'sonner';
 
 const NavLink = ({ to, children, icon: Icon }) => {
   const location = useLocation();
@@ -58,27 +59,30 @@ const Navbar = () => {
                         <NavLink to={user.role === 'alumni' ? '/alumni/mentorship' : '/student/mentorship'} icon={Users}>Mentorship</NavLink>
                       </>
                   )}
-                  <div className="h-6 w-px bg-slate-200 mx-3"></div>
-                  <Link to={user.role === 'alumni' ? '/alumni/profile' : '/student/profile'} className="flex items-center space-x-3 pl-2 pr-4 py-2 rounded-full border border-slate-100 hover:border-amber-200 hover:bg-amber-50/30 transition group bg-slate-50/50">
-                      <div className="h-8 w-8 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center text-white font-bold text-sm shadow-md">
-                          {user.username?.charAt(0).toUpperCase()}
-                      </div>
-                      <span className="text-sm font-bold text-slate-600 group-hover:text-amber-700 transition">{user.username}</span>
-                  </Link>
-                  <button onClick={handleLogout} className="p-2.5 text-slate-400 hover:text-red-500 transition ml-2 hover:bg-red-50 rounded-xl" title="Logout">
-                    <LogOut size={20} />
-                  </button>
+                   <div className="h-6 w-px bg-slate-200 mx-3"></div>
+                   <Link to={user.role === 'alumni' ? '/alumni/profile' : '/student/profile'} className="flex items-center space-x-3 pl-2 pr-4 py-2 rounded-full border border-slate-100 hover:border-amber-200 hover:bg-amber-50/30 transition group bg-slate-50/50">
+                       <div className="h-8 w-8 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center text-white font-bold text-sm shadow-md">
+                           {user.username?.charAt(0).toUpperCase()}
+                       </div>
+                       <span className="text-sm font-bold text-slate-600 group-hover:text-amber-700 transition">{user.username}</span>
+                   </Link>
+                   
+                   <div className="flex items-center space-x-2 ml-4">
+                        <button onClick={handleLogout} className="p-2.5 text-slate-400 hover:text-red-500 transition hover:bg-red-50 rounded-xl" title="Logout">
+                            <LogOut size={20} />
+                        </button>
+                   </div>
                 </>
              ) : (
-                <div className="flex items-center space-x-6">
-                  <Link to="/login" className="text-slate-600 hover:text-amber-600 font-bold transition text-sm">Sign In</Link>
-                  <Link to="/register" className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-amber-500/20 transition-all transform hover:-translate-y-0.5 flex items-center">
-                    Get Started <ChevronRight size={16} className="ml-1" />
-                  </Link>
-                </div>
+                 <div className="flex items-center space-x-4">
+                   <Link to="/login" className="text-slate-600 hover:text-amber-600 font-bold transition text-sm">Sign In</Link>
+                   <Link to="/register" className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-amber-500/20 transition-all transform hover:-translate-y-0.5 flex items-center">
+                     Get Started <ChevronRight size={16} className="ml-1" />
+                   </Link>
+                 </div>
              )}
           </div>
-          <div className="-mr-2 flex items-center md:hidden">
+           <div className="-mr-2 flex items-center space-x-2 md:hidden">
             <button onClick={() => setIsOpen(!isOpen)} className="p-2 rounded-xl text-slate-500 hover:text-amber-600 hover:bg-amber-50 focus:outline-none transition">
               {isOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -91,19 +95,19 @@ const Navbar = () => {
             <motion.div 
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
+                 exit={{ height: 0, opacity: 0 }}
                 className="md:hidden overflow-hidden bg-white border-b border-amber-900/5 shadow-xl"
             >
             <div className="px-4 pt-4 pb-6 space-y-2">
                 {user ? (
                     <>
-                    <Link to="/student/dashboard" className="block px-4 py-3 rounded-xl text-base font-bold text-slate-600 hover:text-amber-700 hover:bg-amber-50">Dashboard</Link>
+                     <Link to="/student/dashboard" className="block px-4 py-3 rounded-xl text-base font-bold text-slate-600 hover:text-amber-700 hover:bg-amber-50">Dashboard</Link>
                     <Link to="/student/feed" className="block px-4 py-3 rounded-xl text-base font-bold text-slate-600 hover:text-amber-700 hover:bg-amber-50">Feed</Link>
                     <Link to="/student/jobs" className="block px-4 py-3 rounded-xl text-base font-bold text-slate-600 hover:text-amber-700 hover:bg-amber-50">Jobs</Link>
                     <Link to="/student/mentorship" className="block px-4 py-3 rounded-xl text-base font-bold text-slate-600 hover:text-amber-700 hover:bg-amber-50">Mentorship</Link>
-                    <button onClick={handleLogout} className="block w-full text-left px-4 py-3 rounded-xl text-base font-bold text-red-500 hover:bg-red-50 mt-4">Sign Out</button>
+                    <button onClick={handleLogout} className="block w-full text-left px-4 py-3 rounded-xl text-base font-bold text-red-500 hover:bg-red-50 mt-4 font-bold transition">Sign Out</button>
                     </>
-                ) : (
+                 ) : (
                     <div className="space-y-4 pt-2 pb-4">
                     <Link to="/login" className="block text-center w-full px-4 py-3 text-slate-600 font-bold hover:bg-slate-50 rounded-xl">Sign In</Link>
                     <Link to="/register" className="block text-center w-full px-4 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold rounded-xl shadow-lg">Create Account</Link>
@@ -117,11 +121,12 @@ const Navbar = () => {
   );
 };
 
-const Layout = () => {
+ const Layout = () => {
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-slate-800 font-sans selection:bg-amber-100 selection:text-amber-900">
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-amber-100/40 via-transparent to-transparent pointer-events-none z-0"></div>
       <div className="relative z-10">
+        <Toaster closeButton position="top-right" richColors theme="light" />
         <Navbar />
         <main>
             <Outlet />

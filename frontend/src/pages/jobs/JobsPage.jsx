@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchJobs, createJob } from '../../features/jobs/jobsSlice';
-import { Loader2, Briefcase, MapPin, Plus, ArrowRight } from 'lucide-react';
+import { Briefcase, MapPin, Plus, ArrowRight } from 'lucide-react';
+import SkeletonCard from '../../components/SkeletonCard';
 
 const JobsPage = () => {
   const dispatch = useDispatch();
@@ -45,7 +46,9 @@ const JobsPage = () => {
       </div>
 
       {loading && jobs.length === 0 ? (
-        <div className="flex justify-center p-20"><Loader2 className="animate-spin text-amber-500" size={40} /></div>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
+          {Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} avatar lines={3} />)}
+        </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
             {jobs.map(job => (

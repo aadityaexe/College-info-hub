@@ -30,6 +30,7 @@ import AdminReports from './pages/admin/AdminReports';
 import AdminSettings from './pages/admin/AdminSettings';
 import AdminEvents from './pages/admin/AdminEvents';
 import EventsPage from './pages/events/EventsPage';
+import ApplicantKanban from './pages/jobs/ApplicantKanban';
 
 function App() {
   return (

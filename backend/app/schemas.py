@@ -117,6 +117,9 @@ class Post(PostBase):
     user_id: int
     likes_count: int
     created_at: datetime
+    is_approved: bool = False
+    approved_at: Optional[datetime] = None
+    approved_by: Optional[str] = None
     user: Optional[User] = None
     comments: List[Comment] = []
 
@@ -166,6 +169,40 @@ class Job(JobBase):
     class Config:
         orm_mode = True
 
+# Job Application Schemas
+class JobApplicationBase(BaseModel):
+    cover_letter: Optional[str] = None
+    resume_url: Optional[str] = None
+
+class JobApplicationCreate(JobApplicationBase):
+    pass
+
+class JobApplicationStatusUpdate(BaseModel):
+    status: str  # Applied, Shortlisted, Interviewing, Hired, Rejected
+    note: Optional[str] = None
+
+class JobApplicationStatusHistoryItem(BaseModel):
+    old_status: Optional[str]
+    new_status: str
+    changed_at: datetime
+    note: Optional[str] = None
+    class Config:
+        orm_mode = True
+
+class JobApplication(JobApplicationBase):
+    id: int
+    job_id: int
+    student_id: int
+    status: str
+    applied_date: datetime
+    updated_at: Optional[datetime] = None
+    student: Optional[User] = None
+    job: Optional[Job] = None
+    status_history: List[JobApplicationStatusHistoryItem] = []
+
+    class Config:
+        orm_mode = True
+
 # Mentorship Schemas
 class MentorshipRequestBase(BaseModel):
     mentor_id: int
@@ -179,8 +216,34 @@ class MentorshipRequest(MentorshipRequestBase):
     student_id: int
     status: str
     created_at: datetime
+    expires_at: Optional[datetime] = None
+    mentor_note: Optional[str] = None
     student: Optional[User] = None
     mentor: Optional[User] = None
+    sessions: List['MentorshipSession'] = []
+
+    class Config:
+        orm_mode = True
+
+# Mentorship Session Schemas
+class MentorshipSessionBase(BaseModel):
+    topic: str
+    scheduled_at: datetime
+    duration_minutes: Optional[int] = 60
+    notes: Optional[str] = None
+
+class MentorshipSessionCreate(MentorshipSessionBase):
+    request_id: int
+
+class MentorshipSessionUpdate(BaseModel):
+    status: Optional[str] = None  # Scheduled, Completed, Cancelled
+    notes: Optional[str] = None
+
+class MentorshipSession(MentorshipSessionBase):
+    id: int
+    request_id: int
+    status: str
+    created_at: datetime
 
     class Config:
         orm_mode = True

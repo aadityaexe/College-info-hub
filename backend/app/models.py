@@ -106,6 +106,10 @@ class Post(Base):
     type = Column(String(50), default='general')
     likes_count = Column(Integer, default=0)
     created_at = Column(DateTime, server_default=func.now())
+    # Moderation
+    is_approved = Column(Boolean, default=False)  # Posts are hidden until admin approves
+    approved_at = Column(DateTime, nullable=True)
+    approved_by = Column(String(100), nullable=True)  # Admin name snapshot
 
     user = relationship("Student", back_populates="posts")
     comments = relationship("Comment", back_populates="post")
@@ -166,11 +170,28 @@ class MentorshipRequest(Base):
     student_id = Column(Integer, ForeignKey("students.id"))
     mentor_id = Column(Integer, ForeignKey("students.id"))
     message = Column(Text)
-    status = Column(String(50), default='Pending')
+    status = Column(String(50), default='Pending')  # Pending, Accepted, Rejected, Completed
     created_at = Column(DateTime, server_default=func.now())
+    expires_at = Column(DateTime, nullable=True)  # Auto-expire after a set period
+    mentor_note = Column(Text, nullable=True)  # Mentor's response note on accept/reject
 
     student = relationship("Student", foreign_keys=[student_id], back_populates="mentorship_requests_sent")
     mentor = relationship("Student", foreign_keys=[mentor_id], back_populates="mentorship_requests_received")
+    sessions = relationship("MentorshipSession", back_populates="request", cascade="all, delete-orphan")
+
+class MentorshipSession(Base):
+    """Tracks individual meetings/sessions between a mentor and mentee."""
+    __tablename__ = "mentorship_sessions"
+    id = Column(Integer, primary_key=True, index=True)
+    request_id = Column(Integer, ForeignKey("mentorship_requests.id", ondelete="CASCADE"))
+    scheduled_at = Column(DateTime, nullable=False)
+    duration_minutes = Column(Integer, default=60)
+    topic = Column(String(255))
+    notes = Column(Text, nullable=True)  # Post-session notes from mentor
+    status = Column(String(50), default='Scheduled')  # Scheduled, Completed, Cancelled
+    created_at = Column(DateTime, server_default=func.now())
+
+    request = relationship("MentorshipRequest", back_populates="sessions")
 
 # New Tables found in mockData but missing in SQL
 class JobApplication(Base):
@@ -178,11 +199,26 @@ class JobApplication(Base):
     id = Column(Integer, primary_key=True, index=True)
     job_id = Column(Integer, ForeignKey("jobs.id"))
     student_id = Column(Integer, ForeignKey("students.id"))
-    status = Column(String(50), default='Applied')
+    status = Column(String(50), default='Applied')  # Applied, Shortlisted, Interviewing, Hired, Rejected
     applied_date = Column(DateTime, server_default=func.now())
+    cover_letter = Column(Text, nullable=True)
+    resume_url = Column(String(500), nullable=True)
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
     job = relationship("Job", back_populates="applications")
     student = relationship("Student", back_populates="job_applications")
+    status_history = relationship("JobApplicationStatusHistory", back_populates="application", cascade="all, delete-orphan")
+
+class JobApplicationStatusHistory(Base):
+    __tablename__ = "job_application_status_history"
+    id = Column(Integer, primary_key=True, index=True)
+    application_id = Column(Integer, ForeignKey("job_applications.id", ondelete="CASCADE"))
+    old_status = Column(String(50))
+    new_status = Column(String(50))
+    changed_at = Column(DateTime, server_default=func.now())
+    note = Column(Text, nullable=True)
+
+    application = relationship("JobApplication", back_populates="status_history")
 
 class Notification(Base):
     __tablename__ = "notifications"

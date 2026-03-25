@@ -12,8 +12,11 @@ import {
   Settings,
   X,
   GraduationCap,
-  Calendar
+  Calendar,
+  Bell
 } from 'lucide-react';
+import { useNotificationSocket } from '../hooks/useNotificationSocket';
+import NotificationDropdown from './NotificationDropdown';
 
 const SidebarItem = ({ to, icon: Icon, label, onClick }) => {
     const location = useLocation();
@@ -36,6 +39,7 @@ const SidebarItem = ({ to, icon: Icon, label, onClick }) => {
 };
 
 const AlumniLayout = () => {
+    useNotificationSocket(); // Real-time notifications
     const { user } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -51,6 +55,7 @@ const AlumniLayout = () => {
         { to: '/alumni/feed', icon: Home, label: 'Community Feed' },
         { to: '/alumni/events', icon: Calendar, label: 'Alumni Events' },
         { to: '/alumni/jobs', icon: Briefcase, label: 'Jobs & Openings' },
+        { to: '/alumni/jobs/applicants', icon: Users, label: 'Applicant Tracker' },
         { to: '/alumni/mentorship', icon: Users, label: 'Mentorship Requests' },
         { to: '/alumni/profile', icon: Settings, label: 'My Profile' },
     ];
