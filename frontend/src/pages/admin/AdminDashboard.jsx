@@ -169,45 +169,7 @@ const AdminDashboard = () => {
                     </div>
                 </motion.div>
 
-                {/* System Health */}
-                 <motion.div 
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.6 }}
-                    className="glass-panel rounded-3xl p-8 flex flex-col items-center text-center relative overflow-hidden border border-white/60 shadow-xl shadow-amber-900/5 bg-white/70"
-                >
-                    <div className="absolute top-0 right-0 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
 
-                    <h3 className="text-xl font-serif font-bold text-slate-800 mb-8 relative z-10 flex items-center">
-                        <Server size={20} className="mr-2 text-slate-400"/> System Health
-                    </h3>
-                    
-                    <div className="relative h-48 w-48 mb-8 z-10">
-                        <svg className="h-full w-full -rotate-90" viewBox="0 0 36 36">
-                            <path className="text-slate-100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="2.5" />
-                            <path className="text-emerald-500 drop-shadow-lg" strokeDasharray="98, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-                        </svg>
-                        <div className="absolute inset-0 flex flex-col items-center justify-center">
-                            <span className="text-5xl font-serif font-bold text-slate-800">98%</span>
-                            <span className="text-xs text-emerald-600 font-bold uppercase tracking-widest mt-1 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">Optimal</span>
-                        </div>
-                    </div>
-
-                    <div className="w-full space-y-4 relative z-10">
-                        <div className="flex justify-between text-sm py-3 border-b border-slate-100 border-dashed">
-                             <span className="text-slate-500 font-medium">Uptime</span>
-                             <span className="font-bold text-slate-800">99.9%</span>
-                        </div>
-                        <div className="flex justify-between text-sm py-3 border-b border-slate-100 border-dashed">
-                             <span className="text-slate-500 font-medium">Database</span>
-                             <span className="font-bold text-emerald-600 flex items-center"><div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>Healthy</span>
-                        </div>
-                        <div className="flex justify-between text-sm py-3">
-                             <span className="text-slate-500 font-medium">Last Backup</span>
-                             <span className="font-bold text-slate-800">2h ago</span>
-                        </div>
-                    </div>
-                </motion.div>
             </div>
         </div>
     );

@@ -128,8 +128,8 @@ const StudentLayout = () => {
                     </button>
                     
                     <div className="mt-6 flex items-center space-x-3 px-2 pt-4 border-t border-amber-50">
-                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center text-white font-bold text-sm shadow-md ring-4 ring-white">
-                            {user?.username?.charAt(0).toUpperCase() || 'S'}
+                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center text-white font-bold text-sm shadow-md ring-4 ring-white">
+                            {user?.name?.charAt(0).toUpperCase() || 'S'}
                         </div>
                         <div className="overflow-hidden">
                             <p className="text-sm font-bold text-slate-800 truncate">{user?.name || 'Student'}</p>
