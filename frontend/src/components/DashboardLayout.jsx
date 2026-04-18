@@ -108,7 +108,7 @@ const DashboardLayout = () => {
                     
                     <div className="mt-6 flex items-center space-x-3 px-2">
                         <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold text-sm shadow-md">
-                            {user.username?.charAt(0).toUpperCase()}
+                            {user.name?.charAt(0).toUpperCase()}
                         </div>
                         <div className="overflow-hidden">
                             <p className="text-sm font-bold text-gray-800 truncate">{user.name}</p>
