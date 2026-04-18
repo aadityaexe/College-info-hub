@@ -79,7 +79,7 @@ const LandingPage = () => {
                         className="mt-24 grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-slate-200/60 pt-12"
                     >
                          {[
-                             { num: "2,500+", label: "Commmunity Members" },
+                             { num: "2,500+", label: "Community Members" },
                              { num: "500+", label: "Success Stories" },
                              { num: "150+", label: "Partner Companies" },
                              { num: "50+", label: "Expert Mentors" }
@@ -128,6 +128,85 @@ const LandingPage = () => {
                     </div>
                 </div>
             </section>
+
+            {/* CTA Banner */}
+            <section className="py-24 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-amber-900 -z-0"></div>
+                <div className="absolute inset-0 opacity-20 -z-0"
+                    style={{ backgroundImage: "radial-gradient(circle at 20% 80%, #d4af37 0%, transparent 50%), radial-gradient(circle at 80% 20%, #d4af37 0%, transparent 50%)" }}>
+                </div>
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+                    <span className="inline-block text-amber-400 font-bold uppercase tracking-widest text-xs mb-6 border border-amber-400/30 bg-amber-400/10 px-4 py-2 rounded-full">
+                        Your Future Starts Here
+                    </span>
+                    <h2 className="text-4xl md:text-6xl font-serif font-extrabold text-white mb-6 leading-tight">
+                        Ready to unlock your <span className="text-amber-400">potential?</span>
+                    </h2>
+                    <p className="text-xl text-slate-300 mb-10 leading-relaxed max-w-2xl mx-auto">
+                        Join thousands of students and alumni who are already building their careers through our community.
+                    </p>
+                    <div className="flex flex-col sm:flex-row justify-center gap-4">
+                        <Link
+                            to="/register"
+                            className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold rounded-2xl text-slate-900 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 shadow-2xl shadow-amber-500/30 transform hover:-translate-y-1 transition-all duration-300"
+                        >
+                            Create Free Account
+                            <ArrowRight className="ml-2" size={20} />
+                        </Link>
+                        <Link
+                            to="/login"
+                            className="inline-flex items-center justify-center px-8 py-4 text-lg font-bold rounded-2xl text-white border border-white/20 hover:bg-white/10 transition-all duration-300"
+                        >
+                            Sign In
+                        </Link>
+                    </div>
+                </div>
+            </section>
+
+            {/* Footer */}
+            <footer className="bg-slate-900 text-slate-400 py-12">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-10">
+                        <div className="col-span-2 md:col-span-1">
+                            <div className="flex items-center space-x-2 mb-4">
+                                <div className="h-8 w-8 bg-gradient-to-br from-amber-400 to-amber-600 rounded-lg flex items-center justify-center">
+                                    <GraduationCap size={16} className="text-white" />
+                                </div>
+                                <span className="text-white font-serif font-bold text-lg">College<span className="text-amber-400">Hub</span></span>
+                            </div>
+                            <p className="text-sm leading-relaxed">Connecting students, alumni, and faculty to build careers and communities.</p>
+                        </div>
+                        <div>
+                            <h4 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Platform</h4>
+                            <ul className="space-y-2 text-sm">
+                                <li><Link to="/register" className="hover:text-amber-400 transition">Get Started</Link></li>
+                                <li><Link to="/login" className="hover:text-amber-400 transition">Sign In</Link></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Features</h4>
+                            <ul className="space-y-2 text-sm">
+                                <li><span className="hover:text-amber-400 transition cursor-default">Alumni Network</span></li>
+                                <li><span className="hover:text-amber-400 transition cursor-default">Job Board</span></li>
+                                <li><span className="hover:text-amber-400 transition cursor-default">Mentorship</span></li>
+                                <li><span className="hover:text-amber-400 transition cursor-default">Campus Events</span></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">Community</h4>
+                            <ul className="space-y-2 text-sm">
+                                <li><span className="text-slate-500 cursor-default">2,500+ Members</span></li>
+                                <li><span className="text-slate-500 cursor-default">500+ Stories</span></li>
+                                <li><span className="text-slate-500 cursor-default">50+ Mentors</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div className="border-t border-slate-800 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <p className="text-sm">© {new Date().getFullYear()} CollegeHub. All rights reserved.</p>
+                        <p className="text-xs text-slate-600">Built with ❤️ for students and alumni</p>
+                    </div>
+                </div>
+            </footer>
         </div>
     );
 };
