@@ -62,9 +62,9 @@ const Navbar = () => {
                    <div className="h-6 w-px bg-slate-200 mx-3"></div>
                    <Link to={user.role === 'alumni' ? '/alumni/profile' : '/student/profile'} className="flex items-center space-x-3 pl-2 pr-4 py-2 rounded-full border border-slate-100 hover:border-amber-200 hover:bg-amber-50/30 transition group bg-slate-50/50">
                        <div className="h-8 w-8 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center text-white font-bold text-sm shadow-md">
-                           {user.username?.charAt(0).toUpperCase()}
+                           {user.name?.charAt(0).toUpperCase()}
                        </div>
-                       <span className="text-sm font-bold text-slate-600 group-hover:text-amber-700 transition">{user.username}</span>
+                       <span className="text-sm font-bold text-slate-600 group-hover:text-amber-700 transition">{user.name}</span>
                    </Link>
                    
                    <div className="flex items-center space-x-2 ml-4">
