@@ -57,6 +57,21 @@
   .glass-btn:hover {
     background-color: #d4af3733;
   }
+
+  /* Custom scrollbar — used in StudentLayout nav and other scrollable panels */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #e2d4aa;
+    border-radius: 9999px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #d4af37;
+  }
 }
 
 html {
