@@ -52,6 +52,7 @@ function App() {
          <Route path="events" element={<EventsPage />} />
          <Route path="jobs" element={<JobsPage />} />
          <Route path="jobs/:id" element={<JobDetailPage />} />
+         <Route path="jobs/:id/applicants" element={<ApplicantKanban />} />
          <Route path="mentorship" element={<MentorshipPage />} />
          <Route path="mentorship/mentors/:id" element={<MentorProfilePage />} />
          <Route path="mail" element={<MailPage />} />
@@ -66,6 +67,7 @@ function App() {
          <Route path="events" element={<EventsPage />} />
          <Route path="jobs" element={<JobsPage />} />
          <Route path="jobs/:id" element={<JobDetailPage />} />
+         <Route path="jobs/:id/applicants" element={<ApplicantKanban />} />
          <Route path="mentorship" element={<MentorshipPage />} />
          <Route path="mentorship/mentors/:id" element={<MentorProfilePage />} />
          <Route path="mail" element={<MailPage />} />
