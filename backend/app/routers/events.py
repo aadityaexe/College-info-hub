@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 from .. import models, schemas, database
-from .users import get_current_user_from_token
+from pydantic import BaseModel
+from ..dependencies import get_current_user_from_token
 
 router = APIRouter(
     prefix="/events",
@@ -74,7 +75,7 @@ def create_event(event: schemas.EventCreate, db: Session = Depends(database.get_
         user_rsvp=None
     )
 
-class RsvpRequest(schemas.BaseModel):
+class RsvpRequest(BaseModel):
     status: str
 
 @router.post("/{event_id}/rsvp")
