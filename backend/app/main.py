@@ -79,10 +79,13 @@ async def global_exception_handler(request: Request, exc: Exception):
     )
 
 # --- CORS Middleware ---
-origins = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
+import os as _os
+
+_raw_origins = _os.getenv(
+    "ALLOWED_ORIGINS",
+    "http://localhost:5173,http://127.0.0.1:5173"
+)
+origins = [o.strip() for o in _raw_origins.split(",") if o.strip()]
 
 app.add_middleware(
     CORSMiddleware,
@@ -108,5 +111,11 @@ def read_root():
     return {
         "status": "online",
         "message": "Welcome to College Info Hub API",
-        "version": "2.0.0"
+        "version": "2.0.0",
     }
+
+
+@app.get("/health", tags=["Health"])
+def health_check():
+    """Lightweight health probe for load balancers and uptime monitors."""
+    return {"status": "healthy", "version": "2.0.0"}
