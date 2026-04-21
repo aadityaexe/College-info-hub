@@ -8,7 +8,7 @@ An enterprise-grade, comprehensive full-stack platform designed to connect stude
 
 ### Frontend Architecture
 - **Framework**: [React](https://react.dev/) v19 + [Vite](https://vitejs.dev/) for blazing-fast HMR and optimized builds.
-- **Styling**: Vanilla CSS utilizing modern CSS Features (CSS Variables, Flexbox/Grid) avoiding heavy utility frameworks for cleaner component segregation.
+- **Styling**: [TailwindCSS v4](https://tailwindcss.com/) via `@tailwindcss/postcss` with custom design tokens defined in `@theme {}` blocks and component utilities in `@layer components`.
 - **State Management**: [Redux Toolkit (RTK)](https://redux-toolkit.js.org/) handling complex synchronous states (e.g., Auth, Jobs, Mentorship, Posts).
 - **Routing**: [React Router DOM](https://reactrouter.com/) v7 emphasizing nested routing and layout-based guard components (`ProtectedRoute.jsx`).
 - **Icons & Motion**: [Lucide React](https://lucide.dev/) for crisp SVGs and [Framer Motion](https://www.framer.com/motion/) for micro-interactions and page transitions.
@@ -73,8 +73,8 @@ backend/
 │   ├── database.py      # SQLAlchemy engine configuration & session dependency
 │   ├── models.py        # Database schema definitions (SQLAlchemy declarative models)
 │   ├── schemas.py       # Pydantic models for request/response validation
-│   ├── utils.py         # Helper functions (password hashing, auth utilities)
-│   ├── dependencies.py  # Auth dependencies (verify_current_user, ensure_admin)
+│   ├── utils.py         # Helper functions (password hashing, JWT token creation)
+│   ├── dependencies.py  # Shared FastAPI dependencies (get_current_user, get_current_admin)
 │   └── routers/         # Granular API Route handlers
 │       ├── admin.py     # Admin actions (users, reports, moderation)
 │       ├── auth.py      # Login and Registration routes
@@ -85,8 +85,9 @@ backend/
 │       ├── posts.py     # Feed posts, likes, comments, and reports
 │       ├── users.py     # Profile management
 │       └── ws.py        # WebSocket connection manager
+├── .env.example         # Environment variable template (copy to .env)
 ├── seed.py              # Script to populate the database with comprehensive mock data
-└── requirements.txt     # Python dependencies declaration
+└── requirements.txt     # Python dependencies with pinned versions
 ```
 
 ### Frontend Directory Structure
@@ -127,14 +128,15 @@ The backend features standard OpenAPI documentation. Once running, access it at:
 - **ReDoc UI**: [http://localhost:8000/redoc](http://localhost:8000/redoc)
 
 ### Route Domains Summary:
-- `/auth/`: `POST /login` (OAuth2 token generation), `POST /register`.
-- `/users/`: `GET /me`, `PUT /profile`, `GET /{id}`.
-- `/posts/`: `GET /`, `POST /`, `POST /{id}/like`, `POST /{id}/comments`, `POST /{id}/report`.
-- `/jobs/`: `GET /`, `POST /`, `POST /{id}/apply`, `GET /applications` (Kanban data), `PUT /applications/{id}/status`.
-- `/mentorship/`: `GET /mentors`, `POST /request`, `PUT /requests/{id}/{action}`, `POST /sessions`.
-- `/events/`: `GET /`, `POST /`, `POST /{id}/rsvp`.
-- `/admin/`: `GET /users`, `PUT /users/{id}/block`, `GET /reports`, `PUT /posts/{id}/approve`.
-- `/ws/`: `GET /{user_id}` (WebSocket protocol upgrade).
+- `/auth/`: `POST /register`, `POST /token` (login).
+- `/users/`: `GET /me`, `PUT /me`, `GET /{id}`.
+- `/posts/`: `GET /`, `POST /`, `GET /my`, `POST /{id}/like`, `POST /{id}/comments`.
+- `/jobs/`: `GET /`, `POST /`, `GET /{id}`, `DELETE /{id}`, `POST /{id}/apply`, `GET /{id}/applications`, `PUT /applications/{id}/status`.
+- `/mentorship/`: `GET /mentors`, `POST /request`, `GET /requests`, `GET /requests/incoming`, `PUT /requests/{id}`, `POST /sessions`, `GET /sessions/{request_id}`, `PUT /sessions/{id}`.
+- `/events/`: `GET /`, `POST /`, `PUT /{id}`, `DELETE /{id}`, `POST /{id}/rsvp`.
+- `/admin/`: `GET /stats`, `GET /users`, `DELETE /users/{id}`, `GET /pending-users`, `POST /approve/{id}`, `POST /reject/{id}`, `POST /block/{id}`, `GET /jobs`, `DELETE /jobs/{id}`, `GET /posts`, `GET /posts/pending`, `POST /posts/{id}/approve`, `DELETE /posts/{id}`, `GET /reports`, `POST /reports/{id}/action`.
+- `/ws/`: `WS /{user_id}` (WebSocket protocol upgrade).
+- `/health`: `GET /health` (uptime probe).
 
 ---
 
@@ -446,3 +448,14 @@ We highly encourage contributions following a strict Trunk-Based development app
 6. **Open a comprehensive Pull Request**, tagging maintainers for review.
 
 *In the Pull Request, detail your changes, provide before/after visual context for UI components, and explicitly document any requested backend SQLAlchemy schema modifications.*
+
+---
+
+## ⚠️ Known Limitations & Future Work
+
+- **No email verification**: Accounts are activated purely by admin approval. Email-based OTP verification is a planned enhancement.
+- **SQLite for development**: The default `DATABASE_URL` points to an SQLite file (`college_hub.db`). Switch to MySQL for production.
+- **Plaintext image storage**: Post images and avatars are stored as base64/URL strings in a `Text` column. A cloud storage integration (e.g., Cloudinary or S3) is the recommended upgrade.
+- **Alumni self-registration**: When a user registers as "Alumni", the backend currently assigns `Student` role and upgrades it on admin approval. A dedicated alumni onboarding flow is planned.
+- **WebSocket scalability**: The current `ConnectionManager` keeps sockets in-memory. For multi-worker deployments, a Redis pub/sub adapter is required.
+- **Rate limits**: Current limits are generous (set for development). Tighten `slowapi` limits before production deployment.
