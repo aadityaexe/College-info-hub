@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, Date, ForeignKey, Boolean, Enum, TIMESTAMP
+from sqlalchemy import Column, Integer, String, Text, DateTime, Date, ForeignKey, Boolean, Enum, TIMESTAMP, UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from .database import Base
@@ -100,7 +100,7 @@ class StudentProfile(Base):
 class Post(Base):
     __tablename__ = "posts"
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("students.id"))
+    user_id = Column(Integer, ForeignKey("students.id"), index=True)
     content = Column(Text)
     image = Column(Text)
     type = Column(String(50), default='general')
@@ -127,9 +127,10 @@ class Comment(Base):
 
 class PostLike(Base):
     __tablename__ = "post_likes"
+    __table_args__ = (UniqueConstraint("post_id", "user_id", name="uq_post_like"),)
     id = Column(Integer, primary_key=True, index=True)
-    post_id = Column(Integer, ForeignKey("posts.id"))
-    user_id = Column(Integer, ForeignKey("students.id"))
+    post_id = Column(Integer, ForeignKey("posts.id"), index=True)
+    user_id = Column(Integer, ForeignKey("students.id"), index=True)
     created_at = Column(DateTime, server_default=func.now())
 
     user = relationship("Student", back_populates="likes")
@@ -197,8 +198,8 @@ class MentorshipSession(Base):
 class JobApplication(Base):
     __tablename__ = "job_applications"
     id = Column(Integer, primary_key=True, index=True)
-    job_id = Column(Integer, ForeignKey("jobs.id"))
-    student_id = Column(Integer, ForeignKey("students.id"))
+    job_id = Column(Integer, ForeignKey("jobs.id"), index=True)
+    student_id = Column(Integer, ForeignKey("students.id"), index=True)
     status = Column(String(50), default='Applied')  # Applied, Shortlisted, Interviewing, Hired, Rejected
     applied_date = Column(DateTime, server_default=func.now())
     cover_letter = Column(Text, nullable=True)
@@ -223,7 +224,7 @@ class JobApplicationStatusHistory(Base):
 class Notification(Base):
     __tablename__ = "notifications"
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("students.id"))
+    user_id = Column(Integer, ForeignKey("students.id"), index=True)
     text = Column(Text)
     read = Column(Boolean, default=False)
     type = Column(String(50))
