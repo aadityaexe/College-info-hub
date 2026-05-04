@@ -72,7 +72,8 @@ const postsSlice = createSlice({
       })
       // Create
       .addCase(createPost.fulfilled, (state, action) => {
-        state.posts.unshift(action.payload);
+        // Do not unshift the new post into the public feed because it requires admin approval.
+        // It will be fetched once approved.
       })
       .addCase(deletePost.fulfilled, (state, action) => {
         state.posts = state.posts.filter(post => post.id !== action.payload);
