@@ -55,11 +55,41 @@ export const updateRequestStatus = createAsyncThunk('mentorship/updateStatus', a
     }
 });
 
+// ── Session Thunks ─────────────────────────────────────────────────────────────
+
+export const scheduleSession = createAsyncThunk('mentorship/scheduleSession', async (data, { rejectWithValue }) => {
+    try {
+        const response = await API.post('/mentorship/sessions', data);
+        return response.data;
+    } catch (err) {
+        return rejectWithValue(err.response?.data?.detail || 'Failed to schedule session');
+    }
+});
+
+export const fetchSessionsForRequest = createAsyncThunk('mentorship/fetchSessions', async (requestId, { rejectWithValue }) => {
+    try {
+        const response = await API.get(`/mentorship/sessions?request_id=${requestId}`);
+        return { requestId, sessions: response.data };
+    } catch (err) {
+        return rejectWithValue(err.response?.data?.detail || 'Failed to fetch sessions');
+    }
+});
+
+export const updateSession = createAsyncThunk('mentorship/updateSession', async ({ id, ...data }, { rejectWithValue }) => {
+    try {
+        const response = await API.put(`/mentorship/sessions/${id}`, data);
+        return response.data;
+    } catch (err) {
+        return rejectWithValue(err.response?.data?.detail || 'Failed to update session');
+    }
+});
+
 const initialState = {
-  requests: [], // Outgoing
-  incomingRequests: [], // Incoming (Alumni view)
+  requests: [],
+  incomingRequests: [],
   mentors: [],
   currentMentor: null,
+  sessions: {},   // Keyed by requestId: { [requestId]: [session, ...] }
   loading: false,
   error: null,
 };
@@ -98,16 +128,33 @@ const mentorshipSlice = createSlice({
             state.incomingRequests = action.payload;
         })
         .addCase(updateRequestStatus.fulfilled, (state, action) => {
-            // Update in incoming requests
             const index = state.incomingRequests.findIndex(r => r.id === action.payload.id);
             if (index !== -1) {
                 state.incomingRequests[index] = action.payload;
             }
-             // Also update in outgoing if it happens to be the same list (mock overlap)
              const outIndex = state.requests.findIndex(r => r.id === action.payload.id);
              if (outIndex !== -1) {
                  state.requests[outIndex] = action.payload;
              }
+        })
+        // Sessions
+        .addCase(scheduleSession.fulfilled, (state, action) => {
+            const session = action.payload;
+            if (!state.sessions[session.request_id]) {
+                state.sessions[session.request_id] = [];
+            }
+            state.sessions[session.request_id].push(session);
+        })
+        .addCase(fetchSessionsForRequest.fulfilled, (state, action) => {
+            state.sessions[action.payload.requestId] = action.payload.sessions;
+        })
+        .addCase(updateSession.fulfilled, (state, action) => {
+            const updated = action.payload;
+            const reqSessions = state.sessions[updated.request_id];
+            if (reqSessions) {
+                const idx = reqSessions.findIndex(s => s.id === updated.id);
+                if (idx !== -1) reqSessions[idx] = updated;
+            }
         });
   },
 });
