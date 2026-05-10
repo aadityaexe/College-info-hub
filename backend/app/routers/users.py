@@ -65,6 +65,40 @@ def update_user_me(
     return user
 
 
+@router.get("/me/stats", response_model=schemas.UserStats)
+def get_my_stats(
+    db: Session = Depends(database.get_db),
+    current_user=Depends(get_current_user_from_token),
+):
+    """Return real activity counts for the currently authenticated user."""
+    if isinstance(current_user, models.Admin):
+        raise HTTPException(status_code=403, detail="Admins do not have personal stats.")
+
+    posts_count = db.query(models.Post).filter(
+        models.Post.user_id == current_user.id
+    ).count()
+
+    applications_count = db.query(models.JobApplication).filter(
+        models.JobApplication.student_id == current_user.id
+    ).count()
+
+    mentorships_count = db.query(models.MentorshipRequest).filter(
+        (models.MentorshipRequest.student_id == current_user.id) |
+        (models.MentorshipRequest.mentor_id == current_user.id)
+    ).count()
+
+    events_count = db.query(models.EventAttendee).filter(
+        models.EventAttendee.student_id == current_user.id
+    ).count()
+
+    return {
+        "posts_count": posts_count,
+        "applications_count": applications_count,
+        "mentorships_count": mentorships_count,
+        "events_count": events_count,
+    }
+
+
 @router.get("/{user_id}", response_model=schemas.User)
 def read_user(user_id: int, db: Session = Depends(database.get_db)):
     """Retrieve a user's public profile by ID."""
