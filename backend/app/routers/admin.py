@@ -142,7 +142,30 @@ def delete_job(
     return {"message": "Job deleted"}
 
 
-# ─── Post Moderation ──────────────────────────────────────────────────────────
+# ─── Post Moderation & Notice ──────────────────────────────────────────────────
+
+@router.post("/posts/notice", response_model=schemas.Post)
+def create_admin_notice(
+    post: schemas.PostCreate,
+    db: Session = Depends(database.get_db),
+    current_user=Depends(get_current_admin),
+):
+    """Admin creates a global notice/announcement. It bypasses user_id constraints by setting user_id null and type='notice'."""
+    from datetime import datetime, timezone
+    
+    # We leave user_id=None since it's an admin post, not a student post
+    db_post = models.Post(
+        content=post.content,
+        image=post.image,
+        type='notice',
+        is_approved=True,
+        approved_at=datetime.now(timezone.utc),
+        approved_by=getattr(current_user, "name", "System Admin")
+    )
+    db.add(db_post)
+    db.commit()
+    db.refresh(db_post)
+    return db_post
 
 @router.get("/posts/pending", response_model=List[schemas.Post])
 def get_pending_posts(
@@ -276,3 +299,140 @@ def handle_report_action(
 
     db.commit()
     return {"message": f"Report action '{action}' completed"}
+
+
+# ── Activity Feed ─────────────────────────────────────────────────────────────
+
+from datetime import datetime, timezone
+
+def _relative_time(dt: datetime) -> str:
+    """Return a human-readable relative time string."""
+    if dt is None:
+        return "unknown"
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    now = datetime.now(timezone.utc)
+    diff = now - dt
+    seconds = int(diff.total_seconds())
+    if seconds < 60:
+        return f"{seconds} sec ago"
+    elif seconds < 3600:
+        return f"{seconds // 60} min ago"
+    elif seconds < 86400:
+        return f"{seconds // 3600} hr ago"
+    else:
+        return f"{seconds // 86400} days ago"
+
+
+@router.get("/activity", response_model=List[schemas.AdminActivityEvent])
+def get_admin_activity(
+    db: Session = Depends(database.get_db),
+    current_user=Depends(get_current_admin),
+):
+    """
+    Return the 20 most recent platform events across users, jobs, posts, and reports.
+    """
+    events = []
+
+    # Recent user registrations (last 5)
+    recent_users = (
+        db.query(models.Student)
+        .order_by(models.Student.created_at.desc())
+        .limit(5).all()
+    )
+    for u in recent_users:
+        role_label = "Alumni" if str(u.role).lower() == "alumni" else "Student"
+        events.append({
+            "msg": f"New {role_label} registered: {u.name}",
+            "time": _relative_time(u.created_at),
+            "type": "user",
+            "_dt": u.created_at,
+        })
+
+    # Recent job postings (last 5)
+    recent_jobs = (
+        db.query(models.Job)
+        .order_by(models.Job.posted_date.desc())
+        .limit(5).all()
+    )
+    for j in recent_jobs:
+        events.append({
+            "msg": f"New job posted: {j.title} at {j.company}",
+            "time": _relative_time(j.posted_date),
+            "type": "job",
+            "_dt": j.posted_date,
+        })
+
+    # Recent posts (last 5)
+    recent_posts = (
+        db.query(models.Post)
+        .order_by(models.Post.created_at.desc())
+        .limit(5).all()
+    )
+    for p in recent_posts:
+        author = p.user.name if p.user else "System Admin"
+        events.append({
+            "msg": f"New post submitted by {author}",
+            "time": _relative_time(p.created_at),
+            "type": "post",
+            "_dt": p.created_at,
+        })
+
+    # Recent reports (last 5)
+    recent_reports = (
+        db.query(models.Report)
+        .order_by(models.Report.created_at.desc())
+        .limit(5).all()
+    )
+    for r in recent_reports:
+        events.append({
+            "msg": f"New report filed: {r.target_type} #{r.target_id} — {r.reason}",
+            "time": _relative_time(r.created_at),
+            "type": "report",
+            "_dt": r.created_at,
+        })
+
+    # Sort all by datetime descending and return top 20
+    events.sort(key=lambda x: x.get("_dt") or datetime.min, reverse=True)
+    return [
+        {"msg": e["msg"], "time": e["time"], "type": e["type"]}
+        for e in events[:20]
+    ]
+
+
+# ── System Settings ────────────────────────────────────────────────────────────
+
+
+def _get_or_create_settings(db: Session) -> models.SystemSettings:
+    """Return the singleton settings row, creating it if not yet present."""
+    settings = db.query(models.SystemSettings).first()
+    if not settings:
+        settings = models.SystemSettings()
+        db.add(settings)
+        db.commit()
+        db.refresh(settings)
+    return settings
+
+
+@router.get("/settings", response_model=schemas.SystemSettingsOut)
+def get_settings(
+    db: Session = Depends(database.get_db),
+    current_user=Depends(get_current_admin),
+):
+    """Return current system settings."""
+    return _get_or_create_settings(db)
+
+
+@router.put("/settings", response_model=schemas.SystemSettingsOut)
+def update_settings(
+    payload: schemas.SystemSettingsUpdate,
+    db: Session = Depends(database.get_db),
+    current_user=Depends(get_current_admin),
+):
+    """Update system settings (partial update supported)."""
+    settings = _get_or_create_settings(db)
+    for field, value in payload.dict(exclude_unset=True).items():
+        setattr(settings, field, value)
+    db.commit()
+    db.refresh(settings)
+    return settings
