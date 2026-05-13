@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from pydantic import BaseModel
 from .. import models, schemas, utils, database
 from ..dependencies import get_current_user_from_token
 from datetime import timedelta
@@ -7,7 +8,7 @@ from datetime import timedelta
 router = APIRouter(tags=["Authentication"])
 
 
-@router.post("/register", response_model=schemas.Token)
+@router.post("/register", response_model=schemas.Message)
 def register(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
     """Register a new user. The account starts in Pending status until admin approval."""
     # Check email uniqueness
@@ -35,17 +36,7 @@ def register(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
     db.commit()
     db.refresh(db_user)
 
-    access_token_expires = timedelta(minutes=utils.ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = utils.create_access_token(
-        data={"sub": db_user.email, "role": "student", "id": db_user.id},
-        expires_delta=access_token_expires,
-    )
-    return {
-        "access_token": access_token,
-        "token_type": "bearer",
-        "role": "student",
-        "id": db_user.id,
-    }
+    return {"message": "Registration successful. Please wait for admin approval."}
 
 
 @router.post("/token", response_model=schemas.Token)
@@ -72,6 +63,13 @@ def login_for_access_token(
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Your account has been suspended. Please contact an administrator.",
+            )
+            
+        # Pending users are rejected at the token boundary
+        if student.status == "Pending":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Your account is pending admin approval.",
             )
 
         user_role = str(student.role).lower() if student.role else "student"
@@ -116,3 +114,27 @@ def login_for_access_token(
         detail="Incorrect email or password",
         headers={"WWW-Authenticate": "Bearer"},
     )
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+
+@router.post("/forgot-password", response_model=schemas.Message)
+def forgot_password(
+    payload: ForgotPasswordRequest,
+    db: Session = Depends(database.get_db),
+):
+    """
+    Initiate a password reset. In production, this would send an email.
+    Currently validates email existence and returns a generic success message
+    to avoid leaking whether an account exists.
+    
+    TODO: Integrate SMTP / SendGrid to actually dispatch the reset token.
+    """
+    # Silently ignore whether user exists (prevents email enumeration)
+    user = db.query(models.Student).filter(
+        models.Student.email == payload.email
+    ).first()
+    # In production: if user: send_reset_email(user.email, generate_token(user))
+    return {"message": "If an account with that email exists, reset instructions have been sent."}
