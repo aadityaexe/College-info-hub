@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchRequests, fetchMentors, requestMentorship, fetchIncomingRequests, updateRequestStatus } from '../../features/mentorship/mentorshipSlice';
-import { Loader2, User, Award, Send, CheckCircle, Clock, XCircle } from 'lucide-react';
+import { fetchRequests, fetchMentors, requestMentorship, fetchIncomingRequests, updateRequestStatus, scheduleSession, fetchSessionsForRequest, updateSession } from '../../features/mentorship/mentorshipSlice';
+import { Loader2, User, Award, Send, CheckCircle, Clock, XCircle, CalendarPlus, Calendar } from 'lucide-react';
+import { toast } from 'sonner';
 
 const MentorshipPage = () => {
   const dispatch = useDispatch();
-  const { requests, incomingRequests, mentors, loading } = useSelector((state) => state.mentorship);
+  const { requests, incomingRequests, mentors, loading, sessions } = useSelector((state) => state.mentorship);
   const { user } = useSelector((state) => state.auth);
   
   const [selectedMentor, setSelectedMentor] = useState(null);
   const [message, setMessage] = useState('');
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [sessionModal, setSessionModal] = useState(null); // { requestId, mentorName }
+  const [sessionForm, setSessionForm] = useState({ topic: '', scheduled_at: '', duration_minutes: 60, notes: '' });
+  const [schedulingSession, setSchedulingSession] = useState(false);
 
   useEffect(() => {
     dispatch(fetchRequests());
@@ -22,6 +26,41 @@ const MentorshipPage = () => {
 
   const handleStatusUpdate = (id, status) => {
       dispatch(updateRequestStatus({ id, status }));
+  };
+
+  const openSessionModal = (request) => {
+      const peerName = user?.role === 'alumni' ? request.student?.name : request.mentor?.name;
+      setSessionModal({ requestId: request.id, peerName });
+      setSessionForm({ topic: '', scheduled_at: '', duration_minutes: 60, notes: '' });
+      dispatch(fetchSessionsForRequest(request.id));
+  };
+
+  const handleScheduleSession = async (e) => {
+      e.preventDefault();
+      if (!sessionModal) return;
+      setSchedulingSession(true);
+      try {
+          await dispatch(scheduleSession({
+              request_id: sessionModal.requestId,
+              topic: sessionForm.topic,
+              scheduled_at: sessionForm.scheduled_at,
+              duration_minutes: Number(sessionForm.duration_minutes),
+              notes: sessionForm.notes || null,
+          })).unwrap();
+          toast.success('Session scheduled!');
+          setSessionForm({ topic: '', scheduled_at: '', duration_minutes: 60, notes: '' });
+      } catch (err) {
+          toast.error(err || 'Failed to schedule session.');
+      } finally {
+          setSchedulingSession(false);
+      }
+  };
+
+  const handleUpdateSession = (id, status) => {
+      dispatch(updateSession({ id, status }))
+          .unwrap()
+          .then(() => toast.success(`Session marked as ${status}.`))
+          .catch(() => toast.error('Could not update session.'));
   };
 
   const openRequestModal = (mentor) => {
@@ -147,6 +186,59 @@ const MentorshipPage = () => {
           </div>
       </div>
 
+      {/* My Sessions — for accepted requests */}
+      {(requests.filter(r => r.status === 'Accepted').length > 0 || incomingRequests.filter(r => r.status === 'Accepted').length > 0) && (
+          <div className="mb-20">
+              <h2 className="text-3xl font-serif font-bold text-slate-800 mb-8 border-b border-slate-200 pb-4 inline-block pr-12">Mentorship Sessions</h2>
+              <div className="space-y-6">
+                  {[...requests.filter(r => r.status === 'Accepted'), ...incomingRequests.filter(r => r.status === 'Accepted')].map((req) => {
+                      const reqSessions = sessions[req.id] || [];
+                      const peerName = user?.role === 'alumni' ? (req.student?.name || 'Student') : (req.mentor?.name || 'Mentor');
+                      return (
+                          <div key={req.id} className="glass-panel rounded-2xl p-6 border border-white/60 shadow-xl shadow-amber-900/5 bg-white/70">
+                              <div className="flex justify-between items-center mb-4">
+                                  <h4 className="font-serif font-bold text-xl text-slate-800">With {peerName}</h4>
+                                  <button
+                                      onClick={() => openSessionModal(req)}
+                                      className="flex items-center space-x-2 bg-amber-500 text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-amber-600 transition shadow-md"
+                                  >
+                                      <CalendarPlus size={16} /> <span>Schedule Session</span>
+                                  </button>
+                              </div>
+                              {reqSessions.length === 0 ? (
+                                  <p className="text-slate-400 text-sm italic">No sessions scheduled yet.</p>
+                              ) : (
+                                  <div className="space-y-3">
+                                      {reqSessions.map((sess) => (
+                                          <div key={sess.id} className="flex items-center justify-between p-4 rounded-xl bg-slate-50 border border-slate-100">
+                                              <div>
+                                                  <p className="font-bold text-slate-800 text-sm">{sess.topic}</p>
+                                                  <p className="text-xs text-slate-500 flex items-center mt-0.5"><Calendar size={12} className="mr-1" />{new Date(sess.scheduled_at).toLocaleString()} &bull; {sess.duration_minutes} min</p>
+                                              </div>
+                                              <div className="flex items-center gap-2">
+                                                  <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
+                                                      sess.status === 'Completed' ? 'bg-emerald-100 text-emerald-700' :
+                                                      sess.status === 'Cancelled' ? 'bg-red-100 text-red-600' :
+                                                      'bg-amber-100 text-amber-700'
+                                                  }`}>{sess.status}</span>
+                                                  {user?.role === 'alumni' && sess.status === 'Scheduled' && (
+                                                      <>
+                                                          <button onClick={() => handleUpdateSession(sess.id, 'Completed')} className="text-xs font-bold bg-emerald-50 text-emerald-700 px-2 py-1 rounded-lg hover:bg-emerald-100 transition">Done</button>
+                                                          <button onClick={() => handleUpdateSession(sess.id, 'Cancelled')} className="text-xs font-bold bg-red-50 text-red-500 px-2 py-1 rounded-lg hover:bg-red-100 transition">Cancel</button>
+                                                      </>
+                                                  )}
+                                              </div>
+                                          </div>
+                                      ))}
+                                  </div>
+                              )}
+                          </div>
+                      );
+                  })}
+              </div>
+          </div>
+      )}
+
       {/* My Requests (Students Only) */}
       {user?.role === 'student' && (
       <div>
@@ -206,14 +298,14 @@ const MentorshipPage = () => {
       </div>
       )}
 
-      {/* Request Modal */}
+      {/* Mentorship Request Modal */}
       {isModalOpen && (
           <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
               <div className="glass-panel rounded-3xl w-full max-w-lg p-8 transform transition-all border border-white/60 shadow-2xl bg-white/95 relative overflow-hidden">
                    <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-amber-400 via-orange-500 to-amber-600"></div>
 
                   <button onClick={() => setIsModalOpen(false)} className="absolute top-5 right-5 text-slate-400 hover:text-slate-600 transition p-2 hover:bg-slate-100 rounded-full">
-                      <Send size={20} className="transform rotate-180"/> 
+                      <XCircle size={20} /> 
                   </button>
                   
                   <h3 className="text-3xl font-serif font-bold text-slate-900 mb-2">Request Mentorship</h3>
@@ -264,6 +356,56 @@ const MentorshipPage = () => {
                           >
                               <span>Send Request</span>
                               <Send size={16} className="ml-2" />
+                          </button>
+                      </div>
+                  </form>
+              </div>
+          </div>
+      )}
+
+      {/* Schedule Session Modal */}
+      {sessionModal && (
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-3xl w-full max-w-lg p-8 shadow-2xl relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-emerald-400 to-teal-600"></div>
+                  <button onClick={() => setSessionModal(null)} className="absolute top-5 right-5 text-slate-400 hover:text-slate-600 transition"><XCircle size={20} /></button>
+                  <h3 className="text-2xl font-serif font-bold text-slate-900 mb-1">Schedule a Session</h3>
+                  <p className="text-sm text-slate-500 mb-6">With <span className="font-bold text-emerald-600">{sessionModal.peerName}</span></p>
+                  <form onSubmit={handleScheduleSession} className="space-y-4">
+                      <div>
+                          <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Topic</label>
+                          <input type="text" required placeholder="e.g., Resume Review, Career Guidance" value={sessionForm.topic}
+                              onChange={e => setSessionForm(p => ({ ...p, topic: e.target.value }))}
+                              className="w-full border border-slate-200 rounded-xl px-4 py-2.5 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none font-medium" />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                          <div>
+                              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Date &amp; Time</label>
+                              <input type="datetime-local" required value={sessionForm.scheduled_at}
+                                  onChange={e => setSessionForm(p => ({ ...p, scheduled_at: e.target.value }))}
+                                  className="w-full border border-slate-200 rounded-xl px-3 py-2.5 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none text-sm font-medium" />
+                          </div>
+                          <div>
+                              <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Duration (mins)</label>
+                              <select value={sessionForm.duration_minutes}
+                                  onChange={e => setSessionForm(p => ({ ...p, duration_minutes: e.target.value }))}
+                                  className="w-full border border-slate-200 rounded-xl px-3 py-2.5 focus:border-emerald-500 outline-none font-medium">
+                                  {[30, 45, 60, 90, 120].map(m => <option key={m} value={m}>{m}</option>)}
+                              </select>
+                          </div>
+                      </div>
+                      <div>
+                          <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Notes (optional)</label>
+                          <textarea rows="3" placeholder="Agenda or prep materials..." value={sessionForm.notes}
+                              onChange={e => setSessionForm(p => ({ ...p, notes: e.target.value }))}
+                              className="w-full border border-slate-200 rounded-xl px-4 py-2.5 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none resize-none text-sm" />
+                      </div>
+                      <div className="flex justify-end gap-3 pt-2">
+                          <button type="button" onClick={() => setSessionModal(null)} className="px-6 py-2.5 text-sm font-bold text-slate-500 hover:bg-slate-50 rounded-xl transition">Cancel</button>
+                          <button type="submit" disabled={schedulingSession}
+                              className="px-8 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl shadow-lg transition flex items-center disabled:opacity-50">
+                              {schedulingSession ? <Loader2 size={16} className="animate-spin mr-2" /> : <CalendarPlus size={16} className="mr-2" />}
+                              Schedule
                           </button>
                       </div>
                   </form>
