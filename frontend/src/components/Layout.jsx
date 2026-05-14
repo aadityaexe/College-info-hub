@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../features/auth/authSlice';
-import { LogOut, Menu, X, Home, Briefcase, Users, LayoutDashboard, ChevronRight } from 'lucide-react';
+import { LogOut, Menu, X, Home, Briefcase, Users, LayoutDashboard, ChevronRight, Compass } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Toaster } from 'sonner';
 
@@ -45,7 +45,7 @@ const Navbar = () => {
               <div className="h-10 w-10 bg-gradient-to-br from-amber-400 to-amber-600 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform duration-500">
                  <span className="text-white font-serif font-bold text-2xl">C</span>
               </div>
-              <span className="text-2xl font-serif font-bold text-slate-800 tracking-tight group-hover:text-amber-600 transition-colors">College<span className="text-amber-600">Hub</span></span>
+              <span className="text-2xl font-serif font-bold text-slate-800 tracking-tight group-hover:text-amber-600 transition-colors">College Info <span className="text-amber-600">Hub</span></span>
             </Link>
           </div>
           <div className="hidden md:ml-10 md:items-center md:flex space-x-1">
@@ -75,6 +75,7 @@ const Navbar = () => {
                 </>
              ) : (
                  <div className="flex items-center space-x-4">
+                   <a href="/#explore" className="text-slate-600 hover:text-amber-600 font-bold transition text-sm flex items-center gap-1.5"><Compass size={16} /> Explore</a>
                    <Link to="/login" className="text-slate-600 hover:text-amber-600 font-bold transition text-sm">Sign In</Link>
                    <Link to="/register" className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-amber-500/20 transition-all transform hover:-translate-y-0.5 flex items-center">
                      Get Started <ChevronRight size={16} className="ml-1" />
@@ -109,6 +110,7 @@ const Navbar = () => {
                     </>
                  ) : (
                     <div className="space-y-4 pt-2 pb-4">
+                    <a href="/#explore" className="block text-center w-full px-4 py-3 text-slate-600 font-bold hover:bg-amber-50 hover:text-amber-700 rounded-xl flex items-center justify-center gap-2"><Compass size={18} /> Explore Community</a>
                     <Link to="/login" className="block text-center w-full px-4 py-3 text-slate-600 font-bold hover:bg-slate-50 rounded-xl">Sign In</Link>
                     <Link to="/register" className="block text-center w-full px-4 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold rounded-xl shadow-lg">Create Account</Link>
                     </div>
