@@ -11,7 +11,7 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
 from . import models, database
-from .routers import auth, users, posts, events, jobs, mentorship, notifications, admin, ws
+from .routers import auth, users, posts, events, jobs, mentorship, notifications, admin, ws, reports, mail, public
 
 # --- Structured Logging Setup ---
 class CustomJsonFormatter(jsonlogger.JsonFormatter):
@@ -105,6 +105,9 @@ app.include_router(mentorship.router, tags=["Mentorship"])
 app.include_router(notifications.router, tags=["Notifications"])
 app.include_router(admin.router, tags=["Admin"])
 app.include_router(ws.router, tags=["WebSocket"])
+app.include_router(reports.router, tags=["Reports"])
+app.include_router(mail.router, tags=["Internal Mail"])
+app.include_router(public.router, tags=["Public"])
 
 @app.get("/", tags=["Health"])
 def read_root():
