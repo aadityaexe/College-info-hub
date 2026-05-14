@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import API from '../../services/api';
-import { Loader2, Search, Slash, CheckCircle, Shield, MoreVertical, Mail, User } from 'lucide-react';
+import { Loader2, Search, Slash, CheckCircle, Shield, MoreVertical, Mail, User, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const AdminUsers = () => {
@@ -38,6 +38,16 @@ const AdminUsers = () => {
             }));
         } catch(err) {
             alert('Action failed');
+        }
+    };
+
+    const handleDeleteUser = async (id) => {
+        if (!window.confirm('Are you sure you want to permanently delete this user? This action cannot be undone.')) return;
+        try {
+            await API.delete(`/admin/users/${id}`);
+            setUsers(users.filter(u => u.id !== id));
+        } catch (err) {
+            alert('Failed to delete user');
         }
     };
 
@@ -106,6 +116,13 @@ const AdminUsers = () => {
                     title={user.status === 'Active' ? 'Block User' : 'Unblock User'}
                 >
                     {user.status === 'Active' ? <Slash size={18} /> : <CheckCircle size={18} />}
+                </button>
+                <button 
+                    onClick={() => handleDeleteUser(user.id)}
+                    className="p-2 rounded-xl text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all"
+                    title="Delete User"
+                >
+                    <Trash2 size={18} />
                 </button>
             </div>
         </motion.div>
