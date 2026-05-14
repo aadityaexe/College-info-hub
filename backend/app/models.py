@@ -255,3 +255,36 @@ class Report(Base):
     created_at = Column(DateTime, server_default=func.now())
 
     reporter = relationship("Student", back_populates="reports")
+
+
+class InternalMessage(Base):
+    """Internal campus mail between users."""
+    __tablename__ = "internal_messages"
+    id = Column(Integer, primary_key=True, index=True)
+    sender_id = Column(Integer, ForeignKey("students.id", ondelete="CASCADE"), nullable=True)
+    recipient_id = Column(Integer, ForeignKey("students.id", ondelete="CASCADE"), nullable=False)
+    subject = Column(String(255), nullable=False)
+    body = Column(Text, nullable=False)
+    is_read = Column(Boolean, default=False)
+    is_starred = Column(Boolean, default=False)
+    sender_deleted = Column(Boolean, default=False)
+    recipient_deleted = Column(Boolean, default=False)
+    created_at = Column(DateTime, server_default=func.now())
+
+    sender = relationship("Student", foreign_keys=[sender_id])
+    recipient = relationship("Student", foreign_keys=[recipient_id])
+
+
+class SystemSettings(Base):
+    """Singleton table for admin-configurable system settings."""
+    __tablename__ = "system_settings"
+    id = Column(Integer, primary_key=True, default=1)
+    site_name = Column(String(255), default="College Community Hub")
+    support_email = Column(String(255), default="support@collegehub.com")
+    maintenance_mode = Column(Boolean, default=False)
+    allow_registration = Column(Boolean, default=True)
+    email_notifications = Column(Boolean, default=True)
+    push_notifications = Column(Boolean, default=False)
+    theme = Column(String(50), default="light")
+    primary_color = Column(String(50), default="amber")
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
