@@ -52,7 +52,7 @@ function App() {
          <Route path="events" element={<EventsPage />} />
          <Route path="jobs" element={<JobsPage />} />
          <Route path="jobs/:id" element={<JobDetailPage />} />
-         <Route path="jobs/:id/applicants" element={<ApplicantKanban />} />
+         {/* Kanban is for job posters (alumni/faculty) only */}
          <Route path="mentorship" element={<MentorshipPage />} />
          <Route path="mentorship/mentors/:id" element={<MentorProfilePage />} />
          <Route path="mail" element={<MailPage />} />
@@ -83,6 +83,7 @@ function App() {
           <Route path="jobs" element={<AdminJobs />} />
           <Route path="reports" element={<AdminReports />} />
           <Route path="settings" element={<AdminSettings />} />
+          <Route path="feed" element={<FeedPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
