@@ -25,9 +25,8 @@ const ReportModal = ({ isOpen, onClose, targetId, targetType = 'post', targetUse
         setSubmitting(true);
         try {
             await API.post('/reports', {
-                targetId,
-                targetType,
-                reportedUser: targetUser,
+                target_id: targetId,
+                target_type: targetType,
                 reason,
                 description
             });
