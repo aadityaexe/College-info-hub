@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { ThumbsUp, MessageCircle, Share2, MoreHorizontal, Send, Clock } from 'lucide-react';
-import { useDispatch } from 'react-redux';
-import { likePost, addComment } from '../features/posts/postsSlice';
+import { ThumbsUp, MessageCircle, Share2, MoreHorizontal, Send, Clock, Trash2 } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { likePost, addComment, deletePost } from '../features/posts/postsSlice';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
 import ReportModal from './ReportModal';
 
 const PostCard = ({ post }) => {
@@ -11,8 +12,9 @@ const PostCard = ({ post }) => {
   const [commentText, setCommentText] = useState('');
   const [showMenu, setShowMenu] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
+  const { user } = useSelector((state) => state.auth);
 
-  const isLiked = post.liked_by?.includes(1); // Mock User ID 1
+  const isLiked = post.liked_by?.includes(user?.id);
 
   const handleLike = () => {
     // Optimistic update handled in slice or locally if needed, but slice is better for consistency across components
@@ -42,14 +44,21 @@ const PostCard = ({ post }) => {
             });
         } else {
             await navigator.clipboard.writeText(window.location.href);
-            alert('Link copied to clipboard!');
+            toast.success('Link copied!', { description: 'Post link copied to clipboard.' });
         }
     } catch (err) {
         console.error('Error sharing:', err);
     }
   };
 
+  const handleDelete = async () => {
+    if (window.confirm("Are you sure you want to delete this post?")) {
+        dispatch(deletePost(post.id));
+    }
+  };
+
   const date = new Date(post.created_at).toLocaleDateString();
+  const authorName = post.user?.name || (post.type === 'notice' ? 'System Admin' : 'Unknown User');
 
   return (
     <>
@@ -65,10 +74,10 @@ const PostCard = ({ post }) => {
         <div className="flex justify-between items-start mb-5">
           <div className="flex items-center space-x-4">
             <div className="h-12 w-12 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white font-serif font-bold text-xl shadow-lg border border-white/40">
-              {post.author ? post.author.charAt(0) : 'U'}
+              {authorName.charAt(0)}
             </div>
             <div>
-              <div className="text-lg font-serif font-bold text-slate-800">{post.author || `User ${post.user_id}`}</div>
+              <div className="text-lg font-serif font-bold text-slate-800">{authorName}</div>
               <div className="text-xs text-slate-500 font-medium flex items-center mt-0.5">
                   <Clock size={10} className="mr-1" />
                   {date}
@@ -90,6 +99,14 @@ const PostCard = ({ post }) => {
                     >
                         Report Post
                     </button>
+                    {user?.role === 'admin' && (
+                        <button 
+                            onClick={() => { setShowMenu(false); handleDelete(); }}
+                            className="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 font-medium transition-colors flex items-center"
+                        >
+                            <Trash2 size={16} className="mr-2" /> Delete Post
+                        </button>
+                    )}
                 </div>
             )}
           </div>
@@ -175,7 +192,7 @@ const PostCard = ({ post }) => {
         onClose={() => setShowReportModal(false)} 
         targetId={post.id} 
         targetType="post"
-        targetUser={post.author}
+        targetUser={authorName}
     />
     </>
   );
