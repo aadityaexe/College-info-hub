@@ -1,17 +1,26 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, KeyRound, CheckCircle, Send } from 'lucide-react';
+import { ArrowLeft, KeyRound, CheckCircle, Send, Loader2 } from 'lucide-react';
+import API from '../../services/api';
 
 const ForgotPasswordPage = () => {
     const [email, setEmail] = useState('');
     const [submitted, setSubmitted] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Mock API call simulation
-        setTimeout(() => {
+        setLoading(true);
+        setError('');
+        try {
+            await API.post('/auth/forgot-password', { email });
             setSubmitted(true);
-        }, 1000);
+        } catch (err) {
+            setError(err.response?.data?.detail || 'Something went wrong. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     if (submitted) {
@@ -75,19 +84,21 @@ const ForgotPasswordPage = () => {
                             <input 
                                 type="email" 
                                 required 
-                                className="w-full rounded-xl border-slate-200 bg-slate-50/50 focus:bg-white shadow-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 p-3.5 transition-all outline-none font-medium text-slate-800 placeholder-slate-400" 
+                                className="w-full rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white shadow-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 p-3.5 transition-all outline-none font-medium text-slate-800 placeholder-slate-400" 
                                 value={email}
                                 placeholder="you@example.com"
                                 onChange={(e) => setEmail(e.target.value)}
                             />
                         </div>
-
+                        {error && (
+                            <p className="text-red-500 text-sm font-medium bg-red-50 border border-red-100 rounded-xl px-4 py-2.5">{error}</p>
+                        )}
                         <button 
                             type="submit" 
-                            disabled={!email}
+                            disabled={!email || loading}
                             className="w-full flex justify-center items-center py-3.5 px-4 rounded-xl shadow-lg shadow-amber-500/30 text-base font-bold text-white bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:-translate-y-0.5"
                         >
-                            Reset Password <Send size={18} className="ml-2" />
+                            {loading ? <><Loader2 size={18} className="mr-2 animate-spin" /> Sending...</> : <>Reset Password <Send size={18} className="ml-2" /></>}
                         </button>
                     </form>
                 </div>
