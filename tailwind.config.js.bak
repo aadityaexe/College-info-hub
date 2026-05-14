@@ -1,0 +1,66 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        // Light Luxury Palette
+        background: '#fdfbf7', // Warm Cream / Off-White
+        surface: '#ffffff', // Pure White
+        
+        // Dark Luxury Palette
+        dark: {
+          bg: '#0a0c10', // Deep Charcoal/Black
+          surface: '#12151c', // Slightly lighter for panels
+          border: '#1e232d',
+          text: '#e2e8f0',
+          muted: '#94a3b8',
+        },
+
+        primary: {
+          50: '#fbf7e6',
+          100: '#f5ecc4',
+          200: '#ebd994',
+          300: '#dec05e',
+          400: '#d4af37', // Gold Main
+          500: '#b89228',
+          600: '#9d751e',
+          700: '#7d5818', // Gold Dark
+          800: '#68471a',
+          900: '#583b1a',
+        },
+        secondary: {
+            500: '#0f172a', // Deep Royal Blue / Slate (Keep for contrast accents)
+            900: '#1e293b', // Lighter Slate for footer/dark areas
+        },
+        text: {
+            main: '#1a202c', // Dark Slate (High contrast)
+            muted: '#64748b', // Cool Grey
+        }
+      },
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+        serif: ['Playfair Display', 'serif'],
+      },
+      animation: {
+        'fade-in': 'fadeIn 0.5s ease-out forwards',
+        'slide-up': 'slideUp 0.5s ease-out forwards',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        slideUp: {
+          '0%': { opacity: '0', transform: 'translateY(10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+      }
+    },
+  },
+  plugins: [],
+}
