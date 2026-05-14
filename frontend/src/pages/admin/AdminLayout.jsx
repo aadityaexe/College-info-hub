@@ -16,7 +16,8 @@ import {
     Bell,
     Briefcase,
     Shield,
-    Calendar
+    Calendar,
+    Home
 } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -32,6 +33,7 @@ const AdminLayout = () => {
 
     const menuItems = [
         { path: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
+        { path: '/admin/feed', icon: Home, label: 'Community Feed' },
         { path: '/admin/pending', icon: UserCheck, label: 'Pending Approvals' },
         { path: '/admin/events', icon: Calendar, label: 'Events' },
         { path: '/admin/jobs', icon: Briefcase, label: 'Job Board' }, 
