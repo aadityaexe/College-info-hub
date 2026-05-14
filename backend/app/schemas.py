@@ -114,7 +114,7 @@ class PostCreate(PostBase):
 
 class Post(PostBase):
     id: int
-    user_id: int
+    user_id: Optional[int] = None
     likes_count: int
     created_at: datetime
     is_approved: bool = False
@@ -286,3 +286,82 @@ class Report(ReportBase):
     
     class Config:
         orm_mode = True
+
+
+# ── Internal Mail Schemas ─────────────────────────────────────────────────────
+
+class InternalMessageCreate(BaseModel):
+    recipient_email: str
+    subject: str
+    body: str
+
+class InternalMessageSender(BaseModel):
+    id: Optional[int] = None
+    name: Optional[str] = None
+    email: Optional[str] = None
+    class Config:
+        orm_mode = True
+
+class InternalMessageOut(BaseModel):
+    id: int
+    sender_id: Optional[int] = None
+    recipient_id: int
+    subject: str
+    body: str
+    is_read: bool
+    is_starred: bool
+    created_at: datetime
+    sender: Optional[InternalMessageSender] = None
+    recipient: Optional[InternalMessageSender] = None
+
+    class Config:
+        orm_mode = True
+
+
+# ── System Settings Schemas ───────────────────────────────────────────────────
+
+class SystemSettingsOut(BaseModel):
+    site_name: str
+    support_email: str
+    maintenance_mode: bool
+    allow_registration: bool
+    email_notifications: bool
+    push_notifications: bool
+    theme: str
+    primary_color: str
+
+    class Config:
+        orm_mode = True
+
+class SystemSettingsUpdate(BaseModel):
+    site_name: Optional[str] = None
+    support_email: Optional[str] = None
+    maintenance_mode: Optional[bool] = None
+    allow_registration: Optional[bool] = None
+    email_notifications: Optional[bool] = None
+    push_notifications: Optional[bool] = None
+    theme: Optional[str] = None
+    primary_color: Optional[str] = None
+
+
+# ── User Stats Schema ─────────────────────────────────────────────────────────
+
+class UserStats(BaseModel):
+    posts_count: int
+    applications_count: int
+    mentorships_count: int
+    events_count: int
+
+
+# ── Admin Activity Schema ─────────────────────────────────────────────────────
+
+class AdminActivityEvent(BaseModel):
+    msg: str
+    time: str
+    type: str  # user | job | post | system | report
+
+
+# ── Generic Response ──────────────────────────────────────────────────────────
+
+class Message(BaseModel):
+    message: str
