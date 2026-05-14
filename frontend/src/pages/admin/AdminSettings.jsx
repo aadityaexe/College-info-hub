@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
+import API from '../../services/api';
 import { 
     Save, 
     Globe, 
@@ -8,15 +10,15 @@ import {
     Palette, 
     Mail, 
     Smartphone,
-    Database,
+    Loader2,
     AlertTriangle
 } from 'lucide-react';
 
 const AdminSettings = () => {
     const [activeTab, setActiveTab] = useState('general');
     const [isLoading, setIsLoading] = useState(false);
+    const [fetchingSettings, setFetchingSettings] = useState(true);
 
-    // Mock Settings State
     const [settings, setSettings] = useState({
         siteName: 'College Community Hub',
         supportEmail: 'support@collegehub.com',
@@ -28,6 +30,26 @@ const AdminSettings = () => {
         primaryColor: 'amber'
     });
 
+    // Load settings from backend on mount
+    useEffect(() => {
+        API.get('/admin/settings')
+            .then(res => {
+                const d = res.data;
+                setSettings({
+                    siteName: d.site_name,
+                    supportEmail: d.support_email,
+                    maintenanceMode: d.maintenance_mode,
+                    allowRegistration: d.allow_registration,
+                    emailNotifications: d.email_notifications,
+                    pushNotifications: d.push_notifications,
+                    theme: d.theme,
+                    primaryColor: d.primary_color,
+                });
+            })
+            .catch(() => toast.error('Could not load settings.'))
+            .finally(() => setFetchingSettings(false));
+    }, []);
+
     const handleToggle = (key) => {
         setSettings(prev => ({ ...prev, [key]: !prev[key] }));
     };
@@ -37,21 +59,41 @@ const AdminSettings = () => {
         setSettings(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         setIsLoading(true);
-        // Simulate API call
-        setTimeout(() => {
+        try {
+            await API.put('/admin/settings', {
+                site_name: settings.siteName,
+                support_email: settings.supportEmail,
+                maintenance_mode: settings.maintenanceMode,
+                allow_registration: settings.allowRegistration,
+                email_notifications: settings.emailNotifications,
+                push_notifications: settings.pushNotifications,
+                theme: settings.theme,
+                primary_color: settings.primaryColor,
+            });
+            toast.success('Settings saved!', { description: 'Your system settings have been updated.' });
+        } catch (err) {
+            toast.error('Failed to save settings.', { description: err.response?.data?.detail || 'Please try again.' });
+        } finally {
             setIsLoading(false);
-            // In a real app, you'd show a toast here
-            alert('Settings saved successfully!');
-        }, 1000);
+        }
     };
 
     const tabs = [
         { id: 'general', label: 'General', icon: Globe },
         { id: 'security', label: 'Security', icon: Shield },
         { id: 'notifications', label: 'Notifications', icon: Bell },
+        { id: 'appearance', label: 'Appearance', icon: Palette },
     ];
+
+    if (fetchingSettings) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <Loader2 className="animate-spin text-amber-500" size={32} />
+            </div>
+        );
+    }
 
     const renderContent = () => {
         switch (activeTab) {
@@ -216,7 +258,7 @@ const AdminSettings = () => {
                     disabled={isLoading}
                     className="flex items-center space-x-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-amber-500/30 hover:shadow-amber-500/40 hover:-translate-y-0.5 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                    <Save size={18} />
+                    {isLoading ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
                     <span>{isLoading ? 'Saving...' : 'Save Changes'}</span>
                 </button>
             </div>
