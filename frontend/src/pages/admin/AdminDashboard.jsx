@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import API from '../../services/api';
+import { toast } from 'sonner';
 import { Loader2, Users, GraduationCap, UserCheck, FileText, ArrowUpRight, Clock, Activity, AlertCircle, Briefcase, Server } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
-const StatCard = ({ title, value, icon: Icon, colorClass, trend, delay }) => (
+
+const StatCard = ({ title, value, icon: Icon, colorClass, trend, delay, maxValue }) => (
     <motion.div 
+
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: delay }}
@@ -24,11 +27,11 @@ const StatCard = ({ title, value, icon: Icon, colorClass, trend, delay }) => (
             </div>
         </div>
         
-        {/* Decorative line */}
+        {/* Progress bar scaled to value (max 2000 for display) */}
         <div className="w-full h-1 bg-slate-100 mt-4 rounded-full overflow-hidden">
              <motion.div 
                 initial={{ width: 0 }}
-                animate={{ width: '70%' }} // Mock progress
+                animate={{ width: `${Math.min(100, Math.round((value / (maxValue || 100)) * 100))}%` }}
                 className={`h-full bg-gradient-to-r ${colorClass}`}
              />
         </div>
@@ -43,12 +46,33 @@ const StatCard = ({ title, value, icon: Icon, colorClass, trend, delay }) => (
 );
 
 const AdminDashboard = () => {
-    // ... (Keep state logic same)
     const [stats, setStats] = useState(null);
+    const [activity, setActivity] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [noticeContent, setNoticeContent] = useState('');
+    const [postingNotice, setPostingNotice] = useState(false);
+
+    const handlePostNotice = async (e) => {
+        e.preventDefault();
+        if (!noticeContent.trim()) return;
+        setPostingNotice(true);
+        try {
+            await API.post('/admin/posts/notice', {
+                content: noticeContent,
+                type: 'notice'
+            });
+            toast.success('Notice posted successfully to the community feed!');
+            setNoticeContent('');
+        } catch (err) {
+            toast.error('Failed to post notice.');
+        } finally {
+            setPostingNotice(false);
+        }
+    };
 
     useEffect(() => {
         fetchStats();
+        fetchActivity();
     }, []);
 
     const fetchStats = async () => {
@@ -57,14 +81,17 @@ const AdminDashboard = () => {
             setStats(res.data);
         } catch (err) {
             console.error(err);
-            setStats({
-                totalStudents: 1240,
-                totalAlumni: 850,
-                pendingApprovals: 8,
-                totalPosts: 3450
-            });
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchActivity = async () => {
+        try {
+            const res = await API.get('/admin/activity');
+            setActivity(res.data);
+        } catch (err) {
+            console.error('Activity fetch failed', err);
         }
     };
 
@@ -80,14 +107,6 @@ const AdminDashboard = () => {
                     <h1 className="text-4xl md:text-5xl font-serif font-bold text-slate-900 tracking-tight">System Overview</h1>
                     <p className="text-slate-500 mt-2 text-lg font-medium">Welcome back, Administrator. System is optimal.</p>
                 </motion.div>
-                <div className="flex space-x-3">
-                    <button className="px-5 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl text-sm font-bold hover:bg-slate-50 hover:text-amber-600 hover:border-amber-200 transition shadow-sm">
-                        Export Report
-                    </button>
-                    <button className="px-5 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-bold hover:bg-slate-800 transition shadow-lg shadow-slate-900/20">
-                        System Logs
-                    </button>
-                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
@@ -96,7 +115,8 @@ const AdminDashboard = () => {
                     value={stats.totalStudents} 
                     icon={GraduationCap} 
                     colorClass="from-amber-400 to-orange-500"
-                    trend="+5% vs last month"
+                    trend={`${stats.totalStudents} registered`}
+                    maxValue={Math.max(stats.totalStudents, stats.totalAlumni, stats.totalPosts, 100)}
                     delay={0.1}
                 />
                 <StatCard 
@@ -104,7 +124,8 @@ const AdminDashboard = () => {
                     value={stats.totalAlumni} 
                     icon={Users} 
                     colorClass="from-amber-600 to-amber-800"
-                    trend="+2 new today"
+                    trend={`${stats.totalAlumni} alumni`}
+                    maxValue={Math.max(stats.totalStudents, stats.totalAlumni, stats.totalPosts, 100)}
                     delay={0.2}
                 />
                 <StatCard 
@@ -112,7 +133,8 @@ const AdminDashboard = () => {
                     value={stats.pendingApprovals} 
                     icon={UserCheck} 
                     colorClass="from-rose-400 to-rose-600"
-                    trend="Requires attention"
+                    trend={stats.pendingApprovals > 0 ? 'Requires attention' : 'All clear'}
+                    maxValue={Math.max(stats.pendingApprovals, 10)}
                     delay={0.3}
                 />
                 <StatCard 
@@ -120,7 +142,8 @@ const AdminDashboard = () => {
                     value={stats.totalPosts} 
                     icon={FileText} 
                     colorClass="from-emerald-400 to-teal-600"
-                    trend="+12% engagement"
+                    trend={`${stats.pendingPosts ?? 0} pending review`}
+                    maxValue={Math.max(stats.totalStudents, stats.totalAlumni, stats.totalPosts, 100)}
                     delay={0.4}
                 />
             </div>
@@ -144,32 +167,68 @@ const AdminDashboard = () => {
                     </div>
                     
                     <div className="space-y-4">
-                         {[
-                             { msg: "New student registration: Rahul Kumar", time: "2 mins ago", type: "user", icon: Users },
-                             { msg: "Alumni verification request: Priya Singh", time: "15 mins ago", type: "alert", icon: UserCheck },
-                             { msg: "New job posted by TechCorp", time: "1 hour ago", type: "job", icon: Briefcase },
-                             { msg: "System backup completed successfully", time: "3 hours ago", type: "system", icon: Server }
-                         ].map((item, i) => (
-                             <div key={i} className="flex items-center space-x-4 p-4 rounded-2xl hover:bg-white transition border border-transparent hover:border-slate-100 hover:shadow-sm group">
-                                 <div className={`h-12 w-12 rounded-full flex items-center justify-center shrink-0 border-2 border-white shadow-sm ${
-                                     item.type === 'alert' ? 'bg-amber-100 text-amber-600' : 
-                                     item.type === 'system' ? 'bg-slate-100 text-slate-600' :
-                                     'bg-blue-100 text-blue-600'
-                                 }`}>
-                                     <item.icon size={20} />
-                                 </div>
-                                 <div className="flex-1">
-                                     <p className="text-slate-800 font-bold text-sm group-hover:text-amber-900 transition">{item.msg}</p>
-                                     <p className="text-xs text-slate-400 mt-1 flex items-center font-medium">
-                                         <Clock size={12} className="mr-1"/> {item.time}
-                                     </p>
-                                 </div>
+                         {activity.length === 0 ? (
+                             <div className="text-center py-10 text-slate-400">
+                                 <Activity size={32} className="mx-auto mb-2 opacity-30" />
+                                 <p className="text-sm">No recent activity</p>
                              </div>
-                         ))}
+                         ) : activity.map((item, i) => {
+                             const iconMap = { user: Users, job: Briefcase, post: FileText, report: AlertCircle, system: Server };
+                             const IconComp = iconMap[item.type] || Activity;
+                             const colorMap = { user: 'bg-blue-100 text-blue-600', job: 'bg-emerald-100 text-emerald-600', post: 'bg-amber-100 text-amber-600', report: 'bg-red-100 text-red-600', system: 'bg-slate-100 text-slate-600' };
+                             return (
+                                 <div key={i} className="flex items-center space-x-4 p-4 rounded-2xl hover:bg-white transition border border-transparent hover:border-slate-100 hover:shadow-sm group">
+                                     <div className={`h-12 w-12 rounded-full flex items-center justify-center shrink-0 border-2 border-white shadow-sm ${colorMap[item.type] || 'bg-slate-100 text-slate-600'}`}>
+                                         <IconComp size={20} />
+                                     </div>
+                                     <div className="flex-1">
+                                         <p className="text-slate-800 font-bold text-sm group-hover:text-amber-900 transition">{item.msg}</p>
+                                         <p className="text-xs text-slate-400 mt-1 flex items-center font-medium">
+                                             <Clock size={12} className="mr-1"/> {item.time}
+                                         </p>
+                                     </div>
+                                 </div>
+                             );
+                         })}
                     </div>
                 </motion.div>
 
 
+                <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6 }}
+                    className="glass-panel rounded-3xl p-8 border border-white/60 shadow-xl shadow-amber-900/5 bg-gradient-to-br from-indigo-500 to-purple-600 text-white relative overflow-hidden"
+                >
+                    <div className="absolute top-[-20%] right-[-10%] w-[200px] h-[200px] bg-white/10 rounded-full blur-[40px]"></div>
+                    <div className="relative z-10">
+                        <div className="flex items-center space-x-3 mb-6">
+                            <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                                <AlertCircle size={20} className="text-white" />
+                            </div>
+                            <h3 className="text-xl font-serif font-bold">Post System Notice</h3>
+                        </div>
+                        <p className="text-indigo-100 text-sm mb-6 leading-relaxed">
+                            Publish an official system notice to the community feed. This will bypass approval and show as "System Admin".
+                        </p>
+                        
+                        <form onSubmit={handlePostNotice}>
+                            <textarea 
+                                className="w-full bg-white/10 border border-white/20 rounded-xl p-4 text-sm text-white placeholder-indigo-200 focus:outline-none focus:ring-2 focus:ring-white/50 resize-none h-24 mb-4 backdrop-blur-md"
+                                placeholder="Type your announcement here..."
+                                value={noticeContent}
+                                onChange={(e) => setNoticeContent(e.target.value)}
+                            ></textarea>
+                            <button 
+                                type="submit"
+                                disabled={postingNotice || !noticeContent.trim()}
+                                className="w-full bg-white text-indigo-600 font-bold py-3 rounded-xl hover:bg-indigo-50 transition shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {postingNotice ? <Loader2 className="animate-spin mx-auto" size={20} /> : 'Publish Notice'}
+                            </button>
+                        </form>
+                    </div>
+                </motion.div>
             </div>
         </div>
     );
