@@ -4,6 +4,7 @@ import { fetchPosts, createPost } from '../../features/posts/postsSlice';
 import PostCard from '../../components/PostCard';
 import SkeletonCard from '../../components/SkeletonCard';
 import { Send, Image as ImageIcon, X, Trophy, Briefcase, HelpCircle, Layers } from 'lucide-react';
+import { toast } from 'sonner';
 
   const TabButton = ({ id, label, icon: Icon, activeTab, setActiveTab }) => (
       <button 
@@ -40,7 +41,15 @@ const FeedPage = () => {
             image: imageUrl, 
             type: postType,
             tags: postType === 'general' ? [] : [postType.charAt(0).toUpperCase() + postType.slice(1)]
-        }));
+        })).then((result) => {
+            if (!result.error) {
+                toast.success('Post submitted!', {
+                    description: 'Your post is pending admin approval and will appear here shortly.',
+                });
+            } else {
+                toast.error('Failed to submit post.');
+            }
+        });
         setContent('');
         setImageUrl('');
         setShowImageInput(false);
