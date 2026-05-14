@@ -1,0 +1,344 @@
+
+> frontend@0.0.0 lint
+> eslint .
+
+
+D:\self project\College info hub\frontend\src\components\AlumniLayout.jsx
+  18:34  error  'Icon' is defined but never used  no-unused-vars
+
+D:\self project\College info hub\frontend\src\components\ComposeMailModal.jsx
+  3:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\self project\College info hub\frontend\src\components\DashboardLayout.jsx
+  16:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  18:34  error  'Icon' is defined but never used                                               no-unused-vars
+
+D:\self project\College info hub\frontend\src\components\EditProfileModal.jsx
+  5:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\self project\College info hub\frontend\src\components\Layout.jsx
+   6:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     no-unused-vars
+  52:20  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  50 |              {user ? (
+  51 |                 <>
+> 52 |                   <NavLink to={user.role === 'admin' ? '/admin' : user.role === 'alumni' ? '/alumni/dashboard' : '/student/dashboard'} icon={LayoutDashboard}>Dashboard</NavLink>
+     |                    ^^^^^^^ This component is created during render
+  53 |                   {user.role !== 'admin' && (
+  54 |                       <>
+  55 |                         <NavLink to={user.role === 'alumni' ? '/alumni/feed' : '/student/feed'} icon={Home}>Feed</NavLink>
+
+  18 |   };
+  19 |
+> 20 |   const NavLink = ({ to, children, icon: Icon }) => {
+     |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 21 |       const isActive = location.pathname.startsWith(to);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 22 |       return (
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 34 |       );
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 35 |   };
+     | ^^^^ The component is created during render here
+  36 |
+  37 |   return (
+  38 |     <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-amber-900/5">                                                                                                       react-hooks/static-components
+  55:26  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  53 |                   {user.role !== 'admin' && (
+  54 |                       <>
+> 55 |                         <NavLink to={user.role === 'alumni' ? '/alumni/feed' : '/student/feed'} icon={Home}>Feed</NavLink>
+     |                          ^^^^^^^ This component is created during render
+  56 |                         <NavLink to={user.role === 'alumni' ? '/alumni/jobs' : '/student/jobs'} icon={Briefcase}>Jobs</NavLink>
+  57 |                         <NavLink to={user.role === 'alumni' ? '/alumni/mentorship' : '/student/mentorship'} icon={Users}>Mentorship</NavLink>
+  58 |                       </>
+
+  18 |   };
+  19 |
+> 20 |   const NavLink = ({ to, children, icon: Icon }) => {
+     |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 21 |       const isActive = location.pathname.startsWith(to);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 22 |       return (
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 34 |       );
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 35 |   };
+     | ^^^^ The component is created during render here
+  36 |
+  37 |   return (
+  38 |     <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-amber-900/5">                     react-hooks/static-components
+  56:26  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  54 |                       <>
+  55 |                         <NavLink to={user.role === 'alumni' ? '/alumni/feed' : '/student/feed'} icon={Home}>Feed</NavLink>
+> 56 |                         <NavLink to={user.role === 'alumni' ? '/alumni/jobs' : '/student/jobs'} icon={Briefcase}>Jobs</NavLink>
+     |                          ^^^^^^^ This component is created during render
+  57 |                         <NavLink to={user.role === 'alumni' ? '/alumni/mentorship' : '/student/mentorship'} icon={Users}>Mentorship</NavLink>
+  58 |                       </>
+  59 |                   )}
+
+  18 |   };
+  19 |
+> 20 |   const NavLink = ({ to, children, icon: Icon }) => {
+     |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 21 |       const isActive = location.pathname.startsWith(to);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 22 |       return (
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 34 |       );
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 35 |   };
+     | ^^^^ The component is created during render here
+  36 |
+  37 |   return (
+  38 |     <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-amber-900/5">                                              react-hooks/static-components
+  57:26  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  55 |                         <NavLink to={user.role === 'alumni' ? '/alumni/feed' : '/student/feed'} icon={Home}>Feed</NavLink>
+  56 |                         <NavLink to={user.role === 'alumni' ? '/alumni/jobs' : '/student/jobs'} icon={Briefcase}>Jobs</NavLink>
+> 57 |                         <NavLink to={user.role === 'alumni' ? '/alumni/mentorship' : '/student/mentorship'} icon={Users}>Mentorship</NavLink>
+     |                          ^^^^^^^ This component is created during render
+  58 |                       </>
+  59 |                   )}
+  60 |                   <div className="h-6 w-px bg-slate-200 mx-3"></div>
+
+  18 |   };
+  19 |
+> 20 |   const NavLink = ({ to, children, icon: Icon }) => {
+     |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 21 |       const isActive = location.pathname.startsWith(to);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 22 |       return (
+     ΓÇª
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 34 |       );
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 35 |   };
+     | ^^^^ The component is created during render here
+  36 |
+  37 |   return (
+  38 |     <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-amber-900/5">  react-hooks/static-components
+
+D:\self project\College info hub\frontend\src\components\NotificationDropdown.jsx
+  3:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\self project\College info hub\frontend\src\components\PostCard.jsx
+  5:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\self project\College info hub\frontend\src\components\ProtectedRoute.jsx
+  6:34  error  'loading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\self project\College info hub\frontend\src\components\ReportModal.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\self project\College info hub\frontend\src\components\StudentLayout.jsx
+  5:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\self project\College info hub\frontend\src\pages\LandingPage.jsx
+  4:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  6:30  error  'Icon' is defined but never used                                               no-unused-vars
+
+D:\self project\College info hub\frontend\src\pages\admin\AdminDashboard.jsx
+  4:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  7:41  error  'Icon' is defined but never used                                               no-unused-vars
+
+D:\self project\College info hub\frontend\src\pages\admin\AdminEvents.jsx
+    7:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+   96:18  error  'err' is defined but never used                                                no-unused-vars
+  106:18  error  'err' is defined but never used                                                no-unused-vars
+
+D:\self project\College info hub\frontend\src\pages\admin\AdminJobs.jsx
+   5:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  31:18  error  'err' is defined but never used                                                no-unused-vars
+
+D:\self project\College info hub\frontend\src\pages\admin\AdminLayout.jsx
+  5:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\self project\College info hub\frontend\src\pages\admin\AdminPending.jsx
+   4:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  32:18  error  'err' is defined but never used                                                no-unused-vars
+  42:18  error  'err' is defined but never used                                                no-unused-vars
+
+D:\self project\College info hub\frontend\src\pages\admin\AdminReports.jsx
+   4:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u            no-unused-vars
+   8:12  error  'loading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  39:18  error  'err' is defined but never used                                                          no-unused-vars
+
+D:\self project\College info hub\frontend\src\pages\admin\AdminSettings.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\self project\College info hub\frontend\src\pages\admin\AdminUsers.jsx
+   4:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  36:17  error  'err' is defined but never used                                                no-unused-vars
+
+D:\self project\College info hub\frontend\src\pages\auth\RegisterPage.jsx
+  20:11  error  'navigate' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\self project\College info hub\frontend\src\pages\dashboard\AlumniDashboard.jsx
+    4:10   error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           no-unused-vars
+  129:27   error  'Icon' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        no-unused-vars
+  360:122  error  Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+  358 |                                     <div className="flex items-center space-x-2 text-xs font-bold">
+  359 |                                         <span className="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md">{job.type}</span>
+> 360 |                                         <span className="text-slate-400 font-medium">Posted {new Date(job.posted_date || Date.now()).toLocaleDateString()}</span>
+      |                                                                                                                          ^^^^^^^^^^ Cannot call impure function
+  361 |                                     </div>
+  362 |                                 </div>
+  363 |                                 <button   react-hooks/purity
+
+D:\self project\College info hub\frontend\src\pages\dashboard\StudentDashboard.jsx
+  3:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  9:27  error  'Icon' is defined but never used                                               no-unused-vars
+
+D:\self project\College info hub\frontend\src\pages\events\EventsPage.jsx
+  18:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u            no-unused-vars
+  27:12  error  'loading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\self project\College info hub\frontend\src\pages\feed\FeedPage.jsx
+   9:27  error  'error' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     no-unused-vars
+  44:41  error  'Icon' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          no-unused-vars
+  63:12  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  61 |       {/* Tabs */}
+  62 |       <div className="flex space-x-2 mb-8 overflow-x-auto pb-2 custom-scrollbar">
+> 63 |           <TabButton id="all" label="All Posts" icon={Layers} />
+     |            ^^^^^^^^^ This component is created during render
+  64 |           <TabButton id="achievements" label="Achievements" icon={Trophy} />
+  65 |           <TabButton id="opportunities" label="Opportunities" icon={Briefcase} />
+  66 |           <TabButton id="questions" label="Questions" icon={HelpCircle} />
+
+  42 |   });
+  43 |
+> 44 |   const TabButton = ({ id, label, icon: Icon }) => (
+     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 45 |       <button 
+     | ^^^^^^^^^^^^^^
+> 46 |         onClick={() => setActiveTab(id)}
+     ΓÇª
+     | ^^^^^^^^^^^^^^
+> 55 |       </button>
+     | ^^^^^^^^^^^^^^
+> 56 |   );
+     | ^^^^ The component is created during render here
+  57 |
+  58 |   return (
+  59 |     <div className="max-w-2xl mx-auto py-8 px-4 md:px-0">  react-hooks/static-components
+  64:12  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  62 |       <div className="flex space-x-2 mb-8 overflow-x-auto pb-2 custom-scrollbar">
+  63 |           <TabButton id="all" label="All Posts" icon={Layers} />
+> 64 |           <TabButton id="achievements" label="Achievements" icon={Trophy} />
+     |            ^^^^^^^^^ This component is created during render
+  65 |           <TabButton id="opportunities" label="Opportunities" icon={Briefcase} />
+  66 |           <TabButton id="questions" label="Questions" icon={HelpCircle} />
+  67 |       </div>
+
+  42 |   });
+  43 |
+> 44 |   const TabButton = ({ id, label, icon: Icon }) => (
+     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 45 |       <button 
+     | ^^^^^^^^^^^^^^
+> 46 |         onClick={() => setActiveTab(id)}
+     ΓÇª
+     | ^^^^^^^^^^^^^^
+> 55 |       </button>
+     | ^^^^^^^^^^^^^^
+> 56 |   );
+     | ^^^^ The component is created during render here
+  57 |
+  58 |   return (
+  59 |     <div className="max-w-2xl mx-auto py-8 px-4 md:px-0">        react-hooks/static-components
+  65:12  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  63 |           <TabButton id="all" label="All Posts" icon={Layers} />
+  64 |           <TabButton id="achievements" label="Achievements" icon={Trophy} />
+> 65 |           <TabButton id="opportunities" label="Opportunities" icon={Briefcase} />
+     |            ^^^^^^^^^ This component is created during render
+  66 |           <TabButton id="questions" label="Questions" icon={HelpCircle} />
+  67 |       </div>
+  68 |
+
+  42 |   });
+  43 |
+> 44 |   const TabButton = ({ id, label, icon: Icon }) => (
+     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 45 |       <button 
+     | ^^^^^^^^^^^^^^
+> 46 |         onClick={() => setActiveTab(id)}
+     ΓÇª
+     | ^^^^^^^^^^^^^^
+> 55 |       </button>
+     | ^^^^^^^^^^^^^^
+> 56 |   );
+     | ^^^^ The component is created during render here
+  57 |
+  58 |   return (
+  59 |     <div className="max-w-2xl mx-auto py-8 px-4 md:px-0">                                                                                          react-hooks/static-components
+  66:12  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+  64 |           <TabButton id="achievements" label="Achievements" icon={Trophy} />
+  65 |           <TabButton id="opportunities" label="Opportunities" icon={Briefcase} />
+> 66 |           <TabButton id="questions" label="Questions" icon={HelpCircle} />
+     |            ^^^^^^^^^ This component is created during render
+  67 |       </div>
+  68 |
+  69 |       {/* Create Post Widget */}
+
+  42 |   });
+  43 |
+> 44 |   const TabButton = ({ id, label, icon: Icon }) => (
+     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 45 |       <button 
+     | ^^^^^^^^^^^^^^
+> 46 |         onClick={() => setActiveTab(id)}
+     ΓÇª
+     | ^^^^^^^^^^^^^^
+> 55 |       </button>
+     | ^^^^^^^^^^^^^^
+> 56 |   );
+     | ^^^^ The component is created during render here
+  57 |
+  58 |   return (
+  59 |     <div className="max-w-2xl mx-auto py-8 px-4 md:px-0">                                                                                                                          react-hooks/static-components
+
+D:\self project\College info hub\frontend\src\pages\jobs\JobDetailPage.jsx
+  18:16  error  'err' is defined but never used  no-unused-vars
+
+D:\self project\College info hub\frontend\src\pages\mail\MailPage.jsx
+  7:19  error  'setMails' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\self project\College info hub\frontend\src\pages\mentorship\MentorshipPage.jsx
+  27:9  error  'openRequestModal' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\self project\College info hub\frontend\src\pages\profile\ProfilePage.jsx
+  9:19  error  'loading' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+D:\self project\College info hub\frontend\src\services\mock\admin.js
+  3:42  error  'config' is defined but never used  no-unused-vars
+
+Γ£û 53 problems (53 errors, 0 warnings)
+
